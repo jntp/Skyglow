@@ -1,0 +1,26 @@
+Skyglow project
+- Looking at light intensity with or without aerosols (how much brighter will it be at night after injecting aerosols in atmopshere i.e. geoengineering)
+- dust.ess.uci.edu/smn (list of seminars)
+  - Seminar on Skyglow (smn skg gwnia 201702)
+  - Datasets in /tmp
+- Injecting sulphate aeorosl into stratosphere
+- mewcd = microcadelas'
+- Studies show urban brightness increases by 25% all levels 
+- Illuminance takes into account hemispheric light.... Brightness only looks at light from zenith (vertical)
+- Diffuse Starlight Fraction = How much light coming from stars get scattered 
+- Nadir = coming from top (someone sees from surface)
+- lumen/sterradian = candela
+- candela/m2 = lumen/(m2 * sterradian)
+- Plot in readable units (millilumens for example)
+- ctl = no geoengineering; xpt = with geoengineering
+- SI = Lux... Watt/m^2 (All Zender plots)
+
+- Need to get netcd files and operator @ nco.sourceforge.net
+- Example script code in skg.sh (under justin file)
+- Zender wants you to generate plots from scripts similar to Powerpoint Presentation lol
+- Assignment: Create contour plot of sky brightness (luminence) as a function of polar angle (angle from zenith)
+ - Different colors from different sky brightness
+ - Broadband azimuthally averaged of polar angle
+ - Create new script that does contour plot
+- ncks stuff in email provides easy way to look at files
+- Panoply (Quick look tool to see plots)
