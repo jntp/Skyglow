@@ -7,8 +7,9 @@ begin
   x!0 = "Present Day"
   x!1 = "Geoengineered"
   x@units = "microcandelas per meter squared"
-  y = (/0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000/)
-
+  y = (/0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000/) ;-- pressure levels
+  y@units = "hPa"
+  
   ;-- Prepare plot
   wks = gsn_open_wks("png", "tang_lum_polar")
 
@@ -16,9 +17,10 @@ begin
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
   res@tiMainString = "Sky Brightness as a Function of Polar Angle"
-  res@tiXAxisString = "Zenith-viewing Luminance [mcd m^-2]"
+  res@tiXAxisString = "Zenith-viewing Luminance [mcd m~S~-2~N~]"
   res@tiYAxisString = "Pressure [mb]"
   res@xyLineThicknessF = 5
+  res@trYReverse = True ;-- reverse Y-axis
   res@trYMinF = 1000 ;-- y axis minimum value
   res@trYMaxF = 0 ;-- y axis maximum value
   res@trXMinF = 0 ;-- x axis minimum value
@@ -27,8 +29,27 @@ begin
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"green", "blue"/)
 
-  ;-- Draw plot
-  plot = gsn_csm_xy(wks, x, y, res)
+  ;-- Make the plot
+  plot = gsn_csm_xy(wks, x, y, res) ;-- draw a pressure/height plot
+
+  ;-- Create a legend
+  textres = True
+  textres@lgLabels = (/"Present Day", "Geoengineered"/)
+  textres@lgLabelFontHeights = (/0.014, 0.014/)
+
+  ;-- Lines on Legend
+  lineres = True
+  lineres@lgLineColors = (/"green", "blue"/)
+  lineres@lgLineThicknesses = 5
+  lineres@LineLengthPercent = 9
+  
+  ;-- Position the legend
+  gres = True
+  gres@YPosPercent = 15 ;-- from bottom
+  gres@XPosPercent = 50 ;-- from left
+  gres@ItemSpacePercent = 10 ;-- space between legend items
+
+  plot = simple_legend(wks, plot, gres, lineres, textres)
 
   draw(plot)
   frame(wks)
@@ -36,4 +57,4 @@ begin
 end 
 
 
-;-- You left off at trying to swap the pressure coord on the graph. Try searching "ncl plotting pressure" on Google. In NCL App Examples
+;-- You left off at tweaking the legend to make it look nice (and identical to the one on the seminar)
