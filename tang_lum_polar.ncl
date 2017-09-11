@@ -3,14 +3,24 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 begin
 
-  x = (/ (/0.5, 0.37, 0.4, 0.43, 0.46, 0.50, 0.55, 0.63, 0.73, 0.83, 0.93, 1.03, 1.13, 1.23, 1.33, 1.43, 1.53, 1.63, 1.71, 1.78, 1.85/), (/0.5, 0.52, 0.54, 0.58, 0.70, 0.80, 0.90, 1, 1.10, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.09, 2.17, 2.22/) /)
-  x!0 = "Present Day"
-  x!1 = "Geoengineered"
-  x@units = "microcandelas per meter squared"
-  y = (/0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000/) ;-- pressure levels
-  y@units = "hPa"
+  ;** Read in netCDF file 
+  dataFile = addfile("skg_swnb_ctl.nc", "r")
+
+  ;** Read in data required for calculation
+  lmn_bb_aa = dataFile->lmn_bb_aa ;-- broadband azimuthally averaged luminance toward zenith
+  levp = dataFile->levp ;-- pressure coordinates (y axis)
+
+  ;** Reorder the dimensions of lmn_bb_aa to allow for plotting
+  x = lmn_bb_aa(plr|0:2, levp|:) ;-- now 2 x 93 instead of 93 x 4 (only plotting two lines instead of four)
+
+  ;** Convert units for better readability
+  x = x * 1000 ;-- convert to millicandelas per meter squared
+  x@units = "millicandela meter-2"
+
+  levp = levp / 100 ;-- convert to hPa or millibars
+  levp@units = "hectopascal"
   
-  ;-- Prepare plot
+  ;** Prepare plot
   wks = gsn_open_wks("png", "tang_lum_polar")
 
   res = True
@@ -21,31 +31,35 @@ begin
   res@tiYAxisString = "Pressure [mb]"
   res@xyLineThicknessF = 5
   res@trYReverse = True ;-- reverse Y-axis
-  res@trYMinF = 1000 ;-- y axis minimum value
-  res@trYMaxF = 0 ;-- y axis maximum value
+  res@trYMinF = 0 ;-- y axis minimum value
+  res@trYMaxF = 1000 ;-- y axis maximum value
   res@trXMinF = 0 ;-- x axis minimum value
-  res@trXMaxF = 2.8 ;-- x axis maximum value
+  res@trXMaxF = 5 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
-  res@xyLineColors = (/"green", "blue"/)
+  res@xyLineColors = (/"green", "blue"/) 
 
-  ;-- Make the plot
-  plot = gsn_csm_xy(wks, x, y, res) ;-- draw a pressure/height plot
+  ;** Turn off tickmarks on the top and right side
+  res@tmYROn = False ;-- right off
+  res@tmXTOn = False ;-- top off
 
-  ;-- Create a legend
-  textres = True
-  textres@lgLabels = (/"Present Day", "Geoengineered"/)
-  textres@lgLabelFontHeights = (/0.014, 0.014/)
+  ;** Make the plot
+  plot = gsn_csm_xy(wks, x, levp, res) ;-- draw a pressure/height plot 
 
-  ;-- Lines on Legend
+  ;** Create a legend
+  textres = True 
+  textres@lgLabels = (/"~F33~p~F~ radians", "2"+"~F33~p"+"/3~F~ radians"/) ;-- Prints "Pi radians" and "(2*pi)/3 radians"
+  textres@lgLabelFontHeights = (/0.020, 0.020/)
+
+  ;** Lines on Legend
   lineres = True
   lineres@lgLineColors = (/"green", "blue"/)
   lineres@lgLineThicknesses = 5
   lineres@LineLengthPercent = 9
   
-  ;-- Position the legend
+  ;** Position the legend
   gres = True
-  gres@YPosPercent = 15 ;-- from bottom
+  gres@YPosPercent = 20 ;-- from top
   gres@XPosPercent = 50 ;-- from left
   gres@ItemSpacePercent = 10 ;-- space between legend items
 
@@ -54,7 +68,5 @@ begin
   draw(plot)
   frame(wks)
 
-end 
+end
 
-
-;-- You left off at tweaking the legend to make it look nice (and identical to the one on the seminar)
