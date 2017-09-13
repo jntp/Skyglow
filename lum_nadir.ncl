@@ -4,14 +4,22 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  dataFile = addfile("skg_swnb_ctl.nc", "r")
+  ctl = addfile("skg_swnb_ctl.nc", "r") ;-- from control file (present day)
+  xpt = addfile("skg_swnb_xpt.nc", "r") ;-- from experiment file (geoengineered)
 
   ;** Read in data required for calculation
-  lmn_bb_aa = dataFile->lmn_bb_aa ;-- broadband azimuthally averaged luminance toward zenith
-  levp = dataFile->levp ;-- pressure coordinates (y axis)
+  ctl_ndr = ctl->lmn_bb_aa_ndr ;-- broadband azimuthally averaged luminance toward nadir (x axis)
+  xpt_ndr = xpt->lmn_bb_aa_ndr 
+  levp = ctl->levp ;-- pressure coordinates (y axis)
+
+  x_dim = dimsizes(levp) ;-- get dimensions for a multidimensional array containing control and experiment values
+ 
 
   ;** Reorder the dimensions of lmn_bb_aa to allow for plotting
-  x = lmn_bb_aa(plr|0:2, levp|:) ;-- now 2 x 93 instead of 93 x 4 (only plotting two lines instead of four)
+  x = (/ctl_ndr, xpt_ndr/) 
+  x@long_name = "Broadband azimuthally averaged luminance towards nadir"
+  x!0 = "conditions"
+  x!1 = "luminance"
 
   ;** Convert units for better readability
   x = x * 1000 ;-- convert to millicandelas per meter squared
@@ -21,20 +29,23 @@ begin
   levp@units = "hectopascal"
   
   ;** Prepare plot
-  wks = gsn_open_wks("png", "tang_lum_polar")
+  wks = gsn_open_wks("png", "lum_nadir")
 
   res = True
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
-  res@tiMainString = "Sky Brightness as a Function of Polar Angle"
+  res@tiMainString = "Urban Night Sky Brightness"
   res@tiXAxisString = "Zenith-viewing Luminance [mcd m~S~-2~N~]"
   res@tiYAxisString = "Pressure [mb]"
+  res@tiMainFontHeightF = 0.025
+  res@tiXAxisFontHeightF = 0.020
+  res@tiYAxisFontHeightF = 0.020
   res@xyLineThicknessF = 5
   res@trYReverse = True ;-- reverse Y-axis
   res@trYMinF = 0 ;-- y axis minimum value
   res@trYMaxF = 1000 ;-- y axis maximum value
   res@trXMinF = 0 ;-- x axis minimum value
-  res@trXMaxF = 5 ;-- x axis maximum value
+  res@trXMaxF = 2.8 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"green", "blue"/) 
@@ -48,7 +59,7 @@ begin
 
   ;** Create a legend
   textres = True 
-  textres@lgLabels = (/"~F33~p~F~ radians", "2"+"~F33~p"+"/3~F~ radians"/) ;-- Prints "Pi radians" and "(2*pi)/3 radians"
+  textres@lgLabels = (/"Present Day", "Geoengineered"/) 
   textres@lgLabelFontHeights = (/0.020, 0.020/)
 
   ;** Lines on Legend
@@ -70,3 +81,4 @@ begin
 
 end
 
+;-- You left off at figuring how to "strip" off the blue line... and switching the "present day" and "geoengineered" on legend

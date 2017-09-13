@@ -1,0 +1,16 @@
+- Polar Angle: 180 (straight down - downwelling), 0 (straight up - upwelling)
+- Cosine polar angle important because polar angle = 0, cos polar angle = 1 means all light hits surface (downwelling)
+- Illuminace: cosine-weighted quantity (total energy coming down)
+
+
+- Make 2D contour plot of lmn_bb_aa (vertical - level pressure, horizontal - polar angle) 
+- Make a line plot of lmn_bb_aa_ndr (vertical - levp, curve - variable values)
+- Make a line plot of ilm_dwn (vertical - levp, curve - variables values)
+- ONE color curve for control, one color curve for experiment
+- For contour plot, contour plot of control, contour plot of experiment, contour plot experiment - control (difference)
+
+Files:
+- swg_swnb_ctl : shortwave narrowband model control simulation
+- skg_swnb_lnd_rmt: shortwave narrowband simulation over land for remote conditions 
+- Difference: ctl over land for urban conditions (looking at light pollution in cities)... no geoengineered aerosol in stratosphere 
+- swg_swnb_xpt: contains aerosols (experiment)
