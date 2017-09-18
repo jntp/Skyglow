@@ -26,8 +26,8 @@ begin
   x@units = "millicandela meter-2"
 
   levp = levp / 100 ;-- convert to hPa or millibars
-  levp@units = "hectopascal"
-  
+  levp@units = "hectopascal" 
+
   ;** Prepare plot
   wks = gsn_open_wks("png", "lum_nadir")
 
