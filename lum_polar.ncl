@@ -4,7 +4,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  cond = addfile("skg_swnb_dff.nc", "r") ;-- cond for "conditions"
+  cond = addfile("skg_swnb_ctl.nc", "r") ;-- cond for "conditions"
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -18,12 +18,12 @@ begin
   levp@units = "hectopascal"
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_dff")  
+  wks = gsn_open_wks("png", "lum_polar_rmt_ctl")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness - Difference"
+  res@tiMainString = "Urban Night Sky Brightness - Present Day"
   res@tiXAxisString = "Polar Angle [rad]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
@@ -32,13 +32,24 @@ begin
   res@tiXAxisFontHeightF = 0.020
   res@tiYAxisFontHeightF = 0.020
   res@trYReverse = True ;-- reverse Y-axis
- 
-  ;** Add some colors
-  res@cnMonoLineColor = False ;-- don't draw lines in only one color
-  res@cnLineColors = span_color_rgba("NCV_jet", 30) ;-- NCV_jet has 256 colors; span it to get 30 colors
-  res@cnLineThicknessF = 3.0 ;-- make lines slightly thicker
+  res@gsnYAxisIrregular2Linear = True ;-- make y-axis "regular"
+  res@lbOrientation = "Vertical" ;-- make the label bar vertical
+
+  ;** Add some colors and turn into fill contour plot
+  res@cnFillOn = True ; Turn on contour fill
+  res@cnFillPalette = "MPL_summer" ;-- set color map
+  res@cnLinesOn = True ;-- keep contour lines
 
   ;** Make the plot
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- draw a contour plot
+
+  ;** Retrieve contour levels (to adjust label bar)
+  getvalues plot@contour
+    "cnLevels" : levels
+  end getvalues
+
+  ;-- Adjust label bar and plot again
+  res@lbLabelStrings = sprintf("%3.1f", levels) ;-- format the label
+  plot = gsn_csm_contour(wks, cond_lmn, res) ;-- plot again with reformatted label 
 
 end
