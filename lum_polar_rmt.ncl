@@ -4,7 +4,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  cond = addfile("skg_swnb_ctl.nc", "r") ;-- cond for "conditions"
+  cond = addfile("skg_swn_rmt_ngl_xpt.nc", "r") ;-- cond for "conditions"
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -17,13 +17,17 @@ begin
   levp = levp / 100 ;-- convert to hectopascals
   levp@units = "hectopascal"
 
+  ;-- Make new color palette based off of MPL_summer, specifically for remote conditions
+  cmap = read_colormap_file("MPL_summer")
+  remoteScheme = cmap(0:12:1, :) ;-- take only some of the values from MPL_summer
+
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_rmt_ctl")  
+  wks = gsn_open_wks("png", "lum_polar_rmt_xpt_16")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness - Present Day"
+  res@tiMainString = "Remote Night Sky Brightness - Geoengineered"
   res@tiXAxisString = "Polar Angle [rad]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
@@ -37,8 +41,10 @@ begin
 
   ;** Add some colors and turn into fill contour plot
   res@cnFillOn = True ; Turn on contour fill
-  res@cnFillPalette = "MPL_summer" ;-- set color map
+  res@cnFillPalette = remoteScheme ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines
+  res@cnLevelSelectionMode = "ExplicitLevels" ;-- set color levels manually
+  res@cnLevels = (/0.05, 0.1, 0.15, 0.2/)
 
   ;** Make the plot
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- draw a contour plot
@@ -49,10 +55,8 @@ begin
   end getvalues
 
   ;-- Adjust label bar and plot again
-  res@lbLabelStrings = sprintf("%3.1f", levels) ;-- format the label
+  res@lbLabelStrings = sprintf("%3.2f", levels) ;-- format the label
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- plot again with reformatted label 
 
 end
-
-;-- You left off at fixing the color palette. Google cnfil palette and look up color fill examples for more details
 

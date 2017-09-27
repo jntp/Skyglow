@@ -4,7 +4,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  cond = addfile("skg_swnb_ctl.nc", "r") ;-- cond for "conditions"
+  cond = addfile("skg_swn_urb_ngl_xpt.nc", "r") ;-- cond for "conditions"
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -18,12 +18,12 @@ begin
   levp@units = "hectopascal"
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_rmt_ctl")  
+  wks = gsn_open_wks("png", "lum_polar_xpt_16")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness - Present Day"
+  res@tiMainString = "Urban Night Sky Brightness - Geoengineered"
   res@tiXAxisString = "Polar Angle [rad]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
