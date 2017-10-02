@@ -3,12 +3,14 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 begin
 
-  ;** Read in netCDF file 
-  cond = addfile("skg_swn_urb_ngl_xpt.nc", "r") ;-- cond for "conditions"
+  ;** Read in netCDF files (two for calculating difference) 
+  cond = addfile("skg_swnb_dff.nc", "r") ;-- cond for "conditions"
+  temp = addfile("skg_swnb_ctl.nc", "r") ;-- for retrieving old data (addresses problems in "difference" files)
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
   levp = cond->levp ;-- pressure coordinates
+  plr_dgr = temp->plr_dgr ;-- polar angle in degrees
 
   ;** Convert units for better readability
   cond_lmn = cond_lmn * 1000 ;-- convert to millicandelas per meter squared
@@ -17,14 +19,18 @@ begin
   levp = levp / 100 ;-- convert to hectopascals
   levp@units = "hectopascal"
 
+  ;-- Swap values on plr_dgr to plot angles in the viewer's perspective instead of the light's
+  plr_dgr = plr_dgr(::-1) 
+
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_xpt_16")  
+  wks = gsn_open_wks("png", "lum_polar_dff")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
+  res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness - Geoengineered"
-  res@tiXAxisString = "Polar Angle [rad]"
+  res@tiMainString = "Urban Night Sky Brightness - Difference"
+  res@tiXAxisString = "Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
   res@gsnRightString = "mcd m~S~-2~N~"
@@ -37,7 +43,7 @@ begin
 
   ;** Add some colors and turn into fill contour plot
   res@cnFillOn = True ; Turn on contour fill
-  res@cnFillPalette = "MPL_summer" ;-- set color map
+  res@cnFillPalette = "BlueRed" ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines
 
   ;** Make the plot

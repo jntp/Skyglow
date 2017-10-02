@@ -4,11 +4,13 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  cond = addfile("skg_swn_rmt_ngl_xpt.nc", "r") ;-- cond for "conditions"
+  cond = addfile("skg_swn_rmt_ngl_dff.nc", "r") ;-- cond for "conditions"
+  temp = addfile("skg_swn_rmt_ngl_ctl.nc", "r") ;-- for retrieving old data (addresses problems in "difference" files)
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
   levp = cond->levp ;-- pressure coordinates
+  plr_dgr = temp->plr_dgr ;-- polar angle in degrees
 
   ;** Convert units for better readability
   cond_lmn = cond_lmn * 1000 ;-- convert to millicandelas per meter squared
@@ -16,19 +18,19 @@ begin
 
   levp = levp / 100 ;-- convert to hectopascals
   levp@units = "hectopascal"
-
-  ;-- Make new color palette based off of MPL_summer, specifically for remote conditions
-  cmap = read_colormap_file("MPL_summer")
-  remoteScheme = cmap(0:12:1, :) ;-- take only some of the values from MPL_summer
+ 
+  ;-- Swap values on plr_dgr to plot angles in the viewer's perspective instead of the light's
+  plr_dgr = plr_dgr(::-1)
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_rmt_xpt_16")  
+  wks = gsn_open_wks("png", "lum_polar_rmt_dff_16")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
+  res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Remote Night Sky Brightness - Geoengineered"
-  res@tiXAxisString = "Polar Angle [rad]"
+  res@tiMainString = "Remote Night Sky Brightness - Difference"
+  res@tiXAxisString = "Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
   res@gsnRightString = "mcd m~S~-2~N~"
@@ -41,10 +43,10 @@ begin
 
   ;** Add some colors and turn into fill contour plot
   res@cnFillOn = True ; Turn on contour fill
-  res@cnFillPalette = remoteScheme ;-- set color map
+  res@cnFillPalette = "BlueRed" ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines
-  res@cnLevelSelectionMode = "ExplicitLevels" ;-- set color levels manually
-  res@cnLevels = (/0.05, 0.1, 0.15, 0.2/)
+  ; res@cnLevelSelectionMode = "ExplicitLevels" ;-- set color levels manually
+  ; res@cnLevels = (/0.08, 0.09, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16/)
 
   ;** Make the plot
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- draw a contour plot
@@ -55,8 +57,8 @@ begin
   end getvalues
 
   ;-- Adjust label bar and plot again
-  res@lbLabelStrings = sprintf("%3.2f", levels) ;-- format the label
-  plot = gsn_csm_contour(wks, cond_lmn, res) ;-- plot again with reformatted label 
+  res@lbLabelStrings = sprintf("%3.3f", levels) ;-- format the label
+  plot = gsn_csm_contour(wks, cond_lmn, res) ;-- plot again with reformatted labe 
 
 end
 
