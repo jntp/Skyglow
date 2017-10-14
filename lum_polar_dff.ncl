@@ -25,9 +25,7 @@ begin
 
   ;-- Read the colormap in an array and set new colormap
   cmap = read_colormap_file("BlueRed")
-  newColors = cmap(116:251, :) ;-- pick only part of the colormap
-
-  print(percentage)
+  newColors = cmap(118:251, :) ;-- pick only part of the colormap
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "lum_polar_dff_16")  
@@ -56,9 +54,12 @@ begin
   res@cnFillPalette = newColors ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines 
   res@cnLevelSelectionMode = "ExplicitLevels"
-  res@cnLevels = (/0, 5, 10, 20, 40, 80, 130, 190, 250, 310, 370, 430/)
+  res@cnLevels = (/0, 10, 15, 20, 25, 26, 27, 28, 29, 30, 35, 40, 80, 120, 170, 220, 270, 320, 370, 420/)
+  
 
   ;** Make the plot
   plot = gsn_csm_contour(wks, percentage, res) ;-- draw a contour plot 
 
 end
+
+;-- Try to figure out how to put labels toward the bottom of the plot
