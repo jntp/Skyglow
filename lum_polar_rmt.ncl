@@ -4,13 +4,12 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  cond = addfile("skg_swn_rmt_ngl_dff.nc", "r") ;-- cond for "conditions"
-  temp = addfile("skg_swn_rmt_ngl_ctl.nc", "r") ;-- for retrieving old data (addresses problems in "difference" files)
+  cond = addfile("skg_swn_rmt_ngl_xpt.nc", "r") ;-- cond for "conditions"
 
   ;** Read in data required for calculation
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
   levp = cond->levp ;-- pressure coordinates
-  plr_dgr = temp->plr_dgr ;-- polar angle in degrees
+  plr_dgr = cond->plr_dgr ;-- polar angle in degrees
 
   ;** Convert units for better readability
   cond_lmn = cond_lmn * 1000 ;-- convert to millicandelas per meter squared
@@ -23,13 +22,13 @@ begin
   plr_dgr = plr_dgr(::-1)
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_rmt_dff_16")  
+  wks = gsn_open_wks("png", "lum_polar_rmt_xpt_16")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Remote Night Sky Brightness - Difference"
+  res@tiMainString = "Remote Night Sky Brightness - Geoengineered"
   res@tiXAxisString = "Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
@@ -37,16 +36,19 @@ begin
   res@tiMainFontHeightF = 0.0225
   res@tiXAxisFontHeightF = 0.020
   res@tiYAxisFontHeightF = 0.020
+  res@trXMaxF = 90 ;-- truncate plot at 90 degrees
   res@trYReverse = True ;-- reverse Y-axis
   res@gsnYAxisIrregular2Linear = True ;-- make y-axis "regular"
   res@lbOrientation = "Vertical" ;-- make the label bar vertical
 
   ;** Add some colors and turn into fill contour plot
   res@cnFillOn = True ; Turn on contour fill
+  res@cnLineLabelsOn = True ;-- turn on contour line labels
+  res@cnLineLabelInterval = 1 ;-- increase line labels
   res@cnFillPalette = "BlueRed" ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines
-  ; res@cnLevelSelectionMode = "ExplicitLevels" ;-- set color levels manually
-  ; res@cnLevels = (/0.08, 0.09, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16/)
+  res@cnLevelSelectionMode = "ExplicitLevels" ;-- set color levels explicitly
+  res@cnLevels = (/0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17/)
 
   ;** Make the plot
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- draw a contour plot
@@ -57,7 +59,7 @@ begin
   end getvalues
 
   ;-- Adjust label bar and plot again
-  res@lbLabelStrings = sprintf("%3.3f", levels) ;-- format the label
+  res@lbLabelStrings = sprintf("%3.2f", levels) ;-- format the label (2 decimal places only)
   plot = gsn_csm_contour(wks, cond_lmn, res) ;-- plot again with reformatted labe 
 
 end

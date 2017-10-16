@@ -4,13 +4,13 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  ctl = addfile("skg_swnb_ctl.nc", "r") ;-- from control file (present day)
-  xpt = addfile("skg_swnb_xpt.nc", "r") ;-- from experiment file (geoengineered)
+  ctl = addfile("skg_swn_rmt_ngl_ctl.nc", "r") ;-- from control file (present day)
+  xpt = addfile("skg_swn_rmt_ngl_xpt.nc", "r") ;-- from experiment file (geoengineered)
 
   ;** Read in data required for calculation
-  ctl_ilm = ctl->ilm_dwn ;-- total downwelling illuminance (direct + diffuse)
-  xpt_ilm = xpt->ilm_dwn
-  levp = ctl->levp ;-- pressure coordinates (y axis)
+  ctl_ilm = ctl->ilm_dwn(31:) ;-- total downwelling illuminance (direct + diffuse)
+  xpt_ilm = xpt->ilm_dwn(31:)
+  levp = ctl->levp(31:) ;-- pressure coordinates (y axis)
 
   x_dim = dimsizes(levp) ;-- get dimensions for a multidimensional array containing control and experiment values
 
@@ -28,12 +28,12 @@ begin
   levp@units = "hectopascal" 
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "illuminance")
+  wks = gsn_open_wks("png", "ilm_rmt_16")
 
   res = True
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
-  res@tiMainString = "Urban Night Sky Illuminance"
+  res@tiMainString = "Remote Night Sky Illuminance"
   res@tiXAxisString = "Downwelling Illuminance [mlux]"
   res@tiYAxisString = "Pressure [mb]"
   res@tiMainFontHeightF = 0.025
@@ -43,8 +43,11 @@ begin
   res@trYReverse = True ;-- reverse Y-axis
   res@trYMinF = 0 ;-- y axis minimum value
   res@trYMaxF = 1000 ;-- y axis maximum value
-  res@trXMinF = 0 ;-- x axis minimum value
-  res@trXMaxF = 18 ;-- x axis maximum value
+
+  ;-- NOTE... FOR URBAN AREAS, CHOOSE BETWEEN 0 and 18
+  ;-- FOR REMOTE, CHOOSE BETWEEN 0.480 and 0.545
+  res@trXMinF = 0.480 ;-- x axis minimum value
+  res@trXMaxF = 0.545 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"green", "blue"/) 
@@ -53,27 +56,24 @@ begin
   res@tmYROn = False ;-- right off
   res@tmXTOn = False ;-- top off
 
-  ;** Make the plot
-  plot = gsn_csm_xy(wks, x, levp, res) ;-- draw a pressure/height plot 
-
   ;** Create a legend
-  textres = True 
-  textres@lgLabels = (/"Present Day", "Geoengineered"/) 
-  textres@lgLabelFontHeights = (/0.020, 0.020/)
+  res@pmLegendDisplayMode = "Always" ;-- turn on legend
+  res@pmLegendSide = "Top" ;-- position of legend (what side)
 
-  ;** Lines on Legend
-  lineres = True
-  lineres@lgLineColors = (/"green", "blue"/)
-  lineres@lgLineThicknesses = 5
-  lineres@LineLengthPercent = 9
-  
-  ;** Position the legend
-  gres = True
-  gres@YPosPercent = 20 ;-- from top
-  gres@XPosPercent = 50 ;-- from left
-  gres@ItemSpacePercent = 10 ;-- space between legend items
+  ;-- NOTE... FOR URBAN AREAS, CHOOSE 0.73 for ParallelPos and -0.38 for OrthogonalPos
+  ;-- FOR REMOTE, CHOOSE 0.24 for ParallelPos and -0.34 for OrthogonalPos
+  res@pmLegendParallelPosF = 0.24 ;-- move units right
+  res@pmLegendOrthogonalPosF = -0.34 ;-- move units down
 
-  plot = simple_legend(wks, plot, gres, lineres, textres)
+  res@lgPerimOn = False ;-- turn off legend perimeter
+  res@pmLegendWidthF = 0.11
+  res@pmLegendHeightF = 0.14
+  res@lgLabelFontHeightF = 0.020
+  res@xyExplicitLegendLabels = (/"  Present Day", "  Geoengineered"/) 
+  res@lgItemOrder = (/1, 0/) ;-- reorder items on legend
+
+  ;** Make the plot
+  plot = gsn_csm_xy(wks, x, levp, res) ;-- draw a pressure/height plot  
 
   draw(plot)
   frame(wks)
