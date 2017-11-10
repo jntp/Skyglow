@@ -35,7 +35,7 @@ begin
   res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
   res@tiMainString = "Urban Night Sky Brightness - Difference"
-  res@tiXAxisString = "Viewing Angle [deg]"
+  res@tiXAxisString = "Zenith Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Change in Luminance"
   res@gsnRightString = "%"
