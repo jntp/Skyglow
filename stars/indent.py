@@ -2,9 +2,13 @@
 # This script reformats scat_data.txt by converting single whitespace and triple whitespace "delimiters" to double whitespaces. The goal is for
 # netcdf4-python to properly read, parse, and convert scat_data.txt to a netcdf4 file.
 
-with open("scat_data.txt", "r+") as file:
+# Read in data from file-to-be-reformatted
+with open("scat_data.txt", "r") as file:
   data = file.readlines()
+file.close()
 
+# Perform operations then write to file (will replace old file)
+with open("scat_data.txt", "w") as file:
   for i, thestring in enumerate(data):
     lastindex = len(thestring)
 
@@ -12,16 +16,12 @@ with open("scat_data.txt", "r+") as file:
     thestring = thestring[2:lastindex]
   
     # Find single and triple spaces and turn them into double spaces
-    a = thestring.find(' ') # find the lowest index of the whitespace character
-    b = a + 1 # will be used to check if adjacent character is a whitespace
-
-    if a == ' ' and b != ' ': # For single spaces
+    if thestring[20] == ' ' and thestring[21] != ' ': # For single spaces
       # Create two separate strings for concatenation
-      stringone = thestring[0:a]
-      print(stringone)
-      stringtwo = thestring[b:lastindex]
+      stringone = thestring[0:20]
+      stringtwo = thestring[21:lastindex]
 
-      thestring = stringone + " " + stringtwo # insert whitespace between strings
+      thestring = stringone + "  " + stringtwo # insert whitespace between strings
 
     # Find and delete the triple space
     c = thestring.find('   ')
@@ -34,20 +34,10 @@ with open("scat_data.txt", "r+") as file:
       stringtwo = thestring[d:lastindex]
 
       thestring = stringone + " " + stringtwo # concatenate the two strings, inserting only one whitespace in between
-    # else:
-      # thestring = thestring + "\n" # only concatenate the newline character
-    
-    # print(thestring)
-
+   
+    # Write newly concatenated string to data and file
     data[i] = thestring
-  
-  print(data[0])
-    
-  file.writelines(data) # write to file
+    file.write(data[i])
 
 file.close()
 
-
-
-# You left off at addressing the file.write error (should not use "r+")
-# You still need to figure out why the single character space isn't becoming double
