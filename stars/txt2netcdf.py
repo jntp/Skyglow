@@ -9,17 +9,21 @@ mydata = Dataset('scat_data.nc', 'w', format='NETCDF4')
 mydata.description = 'Star Catalog'
 
 # dimensions
-mydata.createDimension('right_ascension', )
-mydata.createDimension('declination', )
+mydata.createDimension('right_ascension', 24) # 24 hours total for right ascension
+mydata.createDimension('declination', 180) # 180 degrees total for declination
+mydata.createDimension('magnitude', 8)
+mydata.createDimension('star_type', )
+mydata.createDimension('arcsecond', 999999)
+mydata.createDimension('saonum', 999999)
 
 ra = mydata.createVariable('right_ascension', 'f4', ('right_ascension',))
 ra.long_name = "right ascension"
-ra.units = "hours:minutes:seconds"
+ra.units = "hours"
 ra.standard_name = "right ascension"
 
 dec = mydata.createVariable('declination', 'f4', ('declination',))
 dec.long_name = "declination"
-dec.units = "degrees:minutes:seconds"
+dec.units = "degrees"
 dec.standard_name = "declination"
 
 mag = mydata.createVariable('magnitude', 'f4', ('magnitude',))
@@ -54,4 +58,3 @@ mydata.close()
 
 # You left off at FIGURING OUT THE DIMENSIONS
 # You left off at assigning data to variables (see python-netcdf4 and numpy documentations)
-# You left off at configuring scat_data.txt so that np.loadtxt can work properly

@@ -15,9 +15,23 @@ with open("scat_data.txt", "w") as file:
 
     # Delete the double space at the beginning of each string
     thestring = thestring[2:lastindex]
-  
+
+    # Insert a double space between the two star type characters to create two star type arrays
+    lastindex = len(thestring) # update the lastindex variable
+    
+    stringone = thestring[0:43]
+    stringtwo = thestring[43:lastindex]
+
+    # Fill in any blank second star type character spaces
+    if stringtwo[0] == ' ':
+      thestring = stringone + "  *" + stringtwo[1:] # fill in with an asterisk
+    else:
+      thestring = stringone + "  " + stringtwo 
+
     # Find single and triple spaces and turn them into double spaces
     if thestring[20] == ' ' and thestring[21] != ' ': # For single spaces
+      lastindex = len(thestring)
+      
       # Create two separate strings for concatenation
       stringone = thestring[0:20]
       stringtwo = thestring[21:lastindex]
@@ -29,13 +43,13 @@ with open("scat_data.txt", "w") as file:
 
     if c != -1: # check if triple space exists in string
       d = c + 2 
-      lastindex = len(thestring) # update the lastindex variable
+      lastindex = len(thestring)
 
       stringone = thestring[0:c]
       stringtwo = thestring[d:lastindex]
 
-      thestring = stringone + " " + stringtwo # concatenate the two strings, inserting only one whitespace in between
-  
+      thestring = stringone + " " + stringtwo # concatenate the two strings, inserting only one whitespace in between 
+
     # Convert right ascension to decimal form
     ra = thestring[8:20] # get right ascension in string form
 
