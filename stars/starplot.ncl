@@ -17,7 +17,7 @@ begin
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "scat_plot")
-  ; gsn_define_colormap(wks, colors)
+  ; gsn_define_colormap(wks, colors) ;-- for some reason this turns the whole thing blue (FIX THIS PLEASE)
 
   res = True
   res@gsnDraw = False ;-- don't draw plot
@@ -54,11 +54,32 @@ begin
   res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
-  plot = gsn_csm_xy(wks, ra, dec, res)
-  draw(plot)
+  plot = gsn_csm_xy(wks, ra(0:2), dec(0:2), res)
+  gsn_polymarker(wks, plot, ra(2), dec(2), res) 
 
-  ;** Draw the labels (bottom legend)
-  labels  = (/  "O",  "B",  "A",  "F",  "G",  "K",  "M",  "+"/)
+  starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
+  markerSizes = (/0.011, 0.010, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004/)
+  labels  = (/"O", "B", "A", "F", "G", "K", "M", "+"/)
+
+  newMarkers = True
+  newMarkers@xyMarkerThicknessF = 3
+
+  do i = 0, 7 ;-- loop through starMag array
+    base = ind(mag .ge. -2 .and. mag .lt. -1)
+    lastIndex = dimsizes(base) - 1
+     
+    newMarkers@xyMarkerSizeF = 0.011
+    do j = 0, lastIndex ;-- loop through each stellar magnitude integer 
+      ;** For class "O"
+      matches = ind(typeClass(0:lastIndex) .eq. "O") 
+      newMarkers@xyMarkerColors = colors(0)
+      newMarkers@xyMarkers = 9 ;-- marker type
+      
+
+    end do
+  end do
+
+  ;** Draw the labels (bottom legend) 
   markers = (/    9,    7,    6,    5,    4,    3,    2,   15/)
   xpos    = (/ 0.10, 0.21, 0.32, 0.43, 0.54, 0.65, 0.76, 0.87/)  ;-- you will probably have to change this later
   xpos2   = (/ 0.13, 0.24, 0.35, 0.46, 0.57, 0.68, 0.79, 0.90/)
@@ -78,6 +99,7 @@ begin
     gsn_text_ndc(wks, labels(i), xpos2(i), 0.07, txres) ;-- Add text (that specify the markers) to legend
   end do
 
+  draw(plot)
   frame(wks)
 end
 
@@ -85,3 +107,4 @@ end
 ;-- You left off at figuring out how to control marker sizes based on magnitude
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
+;-- You left off at configuring do while loop (basically assigning marker attributes for each class type)
