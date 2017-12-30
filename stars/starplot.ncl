@@ -64,20 +64,25 @@ begin
   newMarkers = True
   newMarkers@xyMarkerThicknessF = 3
 
-  do i = 0, 7 ;-- loop through starMag array
-    base = ind(mag .ge. -2 .and. mag .lt. -1)
-    lastIndex = dimsizes(base) - 1
+  begin
+    do i = 0, 7 ;-- loop through starMag array
+      base = ind(mag .ge. -2 .and. mag .lt. -1)
+      lastIndex = dimsizes(base) - 1
      
-    newMarkers@xyMarkerSizeF = 0.011
-    do j = 0, lastIndex ;-- loop through each stellar magnitude integer 
-      ;** For class "O"
-      matches = ind(typeClass(0:lastIndex) .eq. "O") 
-      newMarkers@xyMarkerColors = colors(0)
-      newMarkers@xyMarkers = 9 ;-- marker type
+      newMarkers@xyMarkerSizeF = 0.011
+      do j = 0, lastIndex ;-- loop through each stellar magnitude integer 
+        ;** For class "O"
+        matches = ind(typeClass(0:lastIndex) .eq. "O") 
+        newMarkers@xyMarkerColors = colors(0)
+        newMarkers@xyMarkers = 9 ;-- marker type
+        raMatching(:) = ra(matches(:))
+        decMatching(:) = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers)
+        ;-- Check to see if you need to clear the raMatching and decMatching arrays lol
       
-
+      end do
     end do
-  end do
+  end
 
   ;** Draw the labels (bottom legend) 
   markers = (/    9,    7,    6,    5,    4,    3,    2,   15/)
