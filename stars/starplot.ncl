@@ -1,6 +1,7 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
+
 begin
 
   ;** Read in netCDF files
@@ -40,8 +41,7 @@ begin
   res@xyMarkerSizeF = 0.008 ;-- will revise later (to account for varying sizes of different magnitudes)
   res@xyMarkerThicknessF = 3
   res@xyMonoMarkerColor = False
-  res@xyMarkerColors = colors(:)
-  res@xyMarkers = (/9,7,6,5,4,3,2,15/)
+  res@xyMarkerColors = "white" ;-- purposely make markers invisible (for right now)
 
   ;** Put Tickmark resources options here (if needed)
 
@@ -54,8 +54,7 @@ begin
   res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
-  plot = gsn_csm_xy(wks, ra(0:2), dec(0:2), res)
-  gsn_polymarker(wks, plot, ra(2), dec(2), res) 
+  plot = gsn_csm_xy(wks, ra(0:4), dec(0:4), res)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
   markerSizes = (/0.011, 0.010, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004/)
@@ -66,21 +65,94 @@ begin
 
   begin
     do i = 0, 7 ;-- loop through starMag array
-      base = ind(mag .ge. -2 .and. mag .lt. -1)
-      lastIndex = dimsizes(base) - 1
-     
-      newMarkers@xyMarkerSizeF = 0.011
-      do j = 0, lastIndex ;-- loop through each stellar magnitude integer 
-        ;** For class "O"
-        matches = ind(typeClass(0:lastIndex) .eq. "O") 
+      base = ind(mag .ge. starMag(i) .and. mag .lt. starMag(i+1)) ;-- find indices of given stellar magnitude threshold
+      firstIndex = base(0)
+      last = dimsizes(base) - 1 ;-- get last value of base array
+      lastIndex = base(last)
+
+      newMarkers@xyMarkerSizeF = markerSizes(i) 
+
+      ;** For class "O"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "O") ;-- find the indices of a spectral class "O"
+      if (.not. ismissing(matches)) then ;-- check for no matches at all
         newMarkers@xyMarkerColors = colors(0)
         newMarkers@xyMarkers = 9 ;-- marker type
-        raMatching(:) = ra(matches(:))
-        decMatching(:) = dec(matches(:))
-        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers)
-        ;-- Check to see if you need to clear the raMatching and decMatching arrays lol
-      
-      end do
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) ;-- draws new markers of spectral class "O"
+      end if 
+
+      ;** For class "B"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(1)
+        newMarkers@xyMarkers = 7 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if     
+
+      ;** For class "A"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(2)
+        newMarkers@xyMarkers = 6 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+
+      ;** For class "F"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(3)
+        newMarkers@xyMarkers = 5 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+
+      ;** For class "G"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "G")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(4)
+        newMarkers@xyMarkers = 4 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+     
+      ;** For class "K"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "K")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(5)
+        newMarkers@xyMarkers = 3 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+
+      ;** For class "M"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "M")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(6)
+        newMarkers@xyMarkers = 2 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+
+      ;** For class "+"
+      matches = ind(typeClass(firstIndex:lastIndex) .eq. "+")
+      if (.not. ismissing(matches)) then
+        newMarkers@xyMarkerColors = colors(7)
+        newMarkers@xyMarkers = 15 ;-- marker type
+        raMatching = ra(matches(:))
+        decMatching = dec(matches(:))
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+      end if
+
+      delete(base) ;-- delete array to avoid dimensionality errors on next iteration
     end do
   end
 
@@ -96,6 +168,7 @@ begin
 
   do i = 0, 7 ;-- assign attributes for each marker label
     mkres@gsMarkerThicknessF = 4
+
     mkres@gsMarkerSizeF = 0.025
     mkres@gsMarkerIndex = markers(i)
     mkres@gsMarkerColor = colors(i)
@@ -109,7 +182,7 @@ begin
 end
 
 
-;-- You left off at figuring out how to control marker sizes based on magnitude
+;-- You left off at figuring out why you are getting a blank plot!
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
-;-- You left off at configuring do while loop (basically assigning marker attributes for each class type)
+
