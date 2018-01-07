@@ -12,6 +12,7 @@ begin
   dec = scat->dec2000 ;-- declination
   mag = scat->mag ;-- stellar magnitude
   typeClass = scat->typeClass ;-- star type (character)
+  test = typeClass
 
   ;** Create custom colormap to color in markers
   colors = (/"dodgerblue3", "dodgerblue", "navajowhite", "khaki1", "darkgoldenrod1", "darkorange", "firebrick1", "black"/)
@@ -55,6 +56,7 @@ begin
 
   ;** Create the scatter plot
   plot = gsn_csm_xy(wks, ra(0:4), dec(0:4), res)
+  draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
   markerSizes = (/0.011, 0.010, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004/)
@@ -64,7 +66,7 @@ begin
   newMarkers@xyMarkerThicknessF = 3
 
   begin
-    do i = 0, 7 ;-- loop through starMag array
+    do i = 0, 2 ;-- loop through starMag array
       base = ind(mag .ge. starMag(i) .and. mag .lt. starMag(i+1)) ;-- find indices of given stellar magnitude threshold
       firstIndex = base(0)
       last = dimsizes(base) - 1 ;-- get last value of base array
@@ -80,20 +82,31 @@ begin
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) ;-- draws new markers of spectral class "O"
-      end if 
+      end if
+      delete(matches)
 
       ;** For class "B"
+      ; print(typeClass(firstIndex:lastIndex))
+      ; substr = "B"
+      ; matches = str_index_of_substr(typeClass(firstIndex:lastIndex), substr, 0)
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
+      ; print(matches)
       if (.not. ismissing(matches)) then
+        print("RUNNING")
         newMarkers@xyMarkerColors = colors(1)
         newMarkers@xyMarkers = 7 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if     
+      delete(matches)
 
       ;** For class "A"
+      ; print(test(firstIndex:lastIndex))
+      ; substr = "A"
+      ; matches = str_index_of_substr(test(firstIndex:lastIndex), substr, 0)
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
+      ; print(matches)
       if (.not. ismissing(matches)) then
         newMarkers@xyMarkerColors = colors(2)
         newMarkers@xyMarkers = 6 ;-- marker type
@@ -101,9 +114,12 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
 
       ;** For class "F"
+      print(typeClass(firstIndex:lastIndex))
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
+      print(matches)
       if (.not. ismissing(matches)) then
         newMarkers@xyMarkerColors = colors(3)
         newMarkers@xyMarkers = 5 ;-- marker type
@@ -111,6 +127,7 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
 
       ;** For class "G"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "G")
@@ -121,6 +138,7 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
      
       ;** For class "K"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "K")
@@ -131,6 +149,7 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
 
       ;** For class "M"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "M")
@@ -141,6 +160,7 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
 
       ;** For class "+"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "+")
@@ -151,6 +171,7 @@ begin
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
       end if
+      delete(matches)
 
       delete(base) ;-- delete array to avoid dimensionality errors on next iteration
     end do
@@ -177,7 +198,7 @@ begin
     gsn_text_ndc(wks, labels(i), xpos2(i), 0.07, txres) ;-- Add text (that specify the markers) to legend
   end do
 
-  draw(plot)
+  
   frame(wks)
 end
 
@@ -185,4 +206,4 @@ end
 ;-- You left off at figuring out why you are getting a blank plot!
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
-
+;-- NOTE.... ind( ) or str_index_of_substr( ) only returns matching index 0!!! IT MAY BE PROBLEM WITH NCL FILE...

@@ -29,4 +29,3 @@ for i in data:
 
 #close netcdf file to save it
 root_grp.close()
-
