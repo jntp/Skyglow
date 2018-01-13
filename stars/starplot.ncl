@@ -59,11 +59,11 @@ begin
   draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
-  markerSizes = (/0.011, 0.010, 0.009, 0.008, 0.007, 0.006, 0.005, 0.004/)
+  markerSizes = (/3, 2, 1, 0.008, 0.007, 0.006, 0.005, 0.004/)
   labels  = (/"O", "B", "A", "F", "G", "K", "M", "+"/)
 
   newMarkers = True
-  newMarkers@xyMarkerThicknessF = 3
+  newMarkers@gsMarkerThicknessF = 3
 
   begin
     do i = 0, 2 ;-- loop through starMag array
@@ -72,32 +72,34 @@ begin
       last = dimsizes(base) - 1 ;-- get last value of base array
       lastIndex = base(last)
 
-      newMarkers@xyMarkerSizeF = markerSizes(i) 
+      newMarkers@gsMarkerSizeF = markerSizes(i) 
 
       ;** For class "O"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "O") ;-- find the indices of a spectral class "O"
-      if (.not. ismissing(matches)) then ;-- check for no matches at all
-        newMarkers@xyMarkerColors = colors(0)
-        newMarkers@xyMarkers = 9 ;-- marker type
+      if (.not. ismissing(matches(0))) then ;-- check for no matches at all
+        newMarkers@gsMarkerColor = colors(0)
+        newMarkers@gsMarkerIndex = 9 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) ;-- draws new markers of spectral class "O"
+        delete(raMatching) ;-- delete to avoid dimensionality errors
+        delete(decMatching)
       end if
       delete(matches)
 
       ;** For class "B"
-      ; print(typeClass(firstIndex:lastIndex))
-      ; substr = "B"
-      ; matches = str_index_of_substr(typeClass(firstIndex:lastIndex), substr, 0)
+      print(typeClass(firstIndex:lastIndex))
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
-      ; print(matches)
-      if (.not. ismissing(matches)) then
+      print(matches)
+      if (.not. ismissing(matches(0))) then
         print("RUNNING")
-        newMarkers@xyMarkerColors = colors(1)
-        newMarkers@xyMarkers = 7 ;-- marker type
+        newMarkers@gsMarkerColor = colors(1)
+        newMarkers@gsMarkerIndex = 7 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
-        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers)
+        delete(raMatching)
+        delete(decMatching)
       end if     
       delete(matches)
 
@@ -107,69 +109,82 @@ begin
       ; matches = str_index_of_substr(test(firstIndex:lastIndex), substr, 0)
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
       ; print(matches)
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(2)
-        newMarkers@xyMarkers = 6 ;-- marker type
+      if (.not. ismissing(matches(0))) then
+        newMarkers@gsMarkerColor = colors(2)
+        newMarkers@gsMarkerIndex = 6 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)       
       end if
       delete(matches)
 
       ;** For class "F"
-      print(typeClass(firstIndex:lastIndex))
+      ; print(typeClass(firstIndex:lastIndex))
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
-      print(matches)
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(3)
-        newMarkers@xyMarkers = 5 ;-- marker type
+      ; print(matches)
+      if (.not. ismissing(matches(0))) then
+        print("RUNNING HERE")
+        newMarkers@gsMarkerColor = colors(3)
+        newMarkers@gsMarkerIndex = 5 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)     
       end if
       delete(matches)
 
       ;** For class "G"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "G")
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(4)
-        newMarkers@xyMarkers = 4 ;-- marker type
+      if (.not. ismissing(matches(0))) then
+        newMarkers@gsMarkerColor = colors(4)
+        newMarkers@gsMarkerIndex = 4 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)     
       end if
       delete(matches)
      
       ;** For class "K"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "K")
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(5)
-        newMarkers@xyMarkers = 3 ;-- marker type
+      if (.not. ismissing(matches(0))) then
+        newMarkers@gsMarkerColor = colors(5)
+        newMarkers@gsMarkerIndex = 3 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)     
       end if
       delete(matches)
 
       ;** For class "M"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "M")
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(6)
-        newMarkers@xyMarkers = 2 ;-- marker type
+      if (.not. ismissing(matches(0))) then
+        newMarkers@gsMarkerColor = colors(6)
+        newMarkers@gsMarkerIndex = 2 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)     
       end if
       delete(matches)
 
       ;** For class "+"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "+")
-      if (.not. ismissing(matches)) then
-        newMarkers@xyMarkerColors = colors(7)
-        newMarkers@xyMarkers = 15 ;-- marker type
+      if (.not. ismissing(matches(0))) then
+        newMarkers@gsMarkerColor = colors(7)
+        newMarkers@gsMarkerIndex = 15 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
+        delete(raMatching)
+        delete(decMatching)
       end if
       delete(matches)
 
@@ -203,7 +218,6 @@ begin
 end
 
 
-;-- You left off at figuring out why you are getting a blank plot!
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
-;-- NOTE.... ind( ) or str_index_of_substr( ) only returns matching index 0!!! IT MAY BE PROBLEM WITH NCL FILE...
+;-- Why are all markers the same size? Fix problem with marker sizes....
