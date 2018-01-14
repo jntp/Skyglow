@@ -15,11 +15,10 @@ begin
   test = typeClass
 
   ;** Create custom colormap to color in markers
-  colors = (/"dodgerblue3", "dodgerblue", "navajowhite", "khaki1", "darkgoldenrod1", "darkorange", "firebrick1", "black"/)
+  colors = (/"midnightblue", "mediumblue", "dodgerblue3", "gray10", "coral2", "firebrick2", "red1", "black"/)
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "scat_plot")
-  ; gsn_define_colormap(wks, colors) ;-- for some reason this turns the whole thing blue (FIX THIS PLEASE)
 
   res = True
   res@gsnDraw = False ;-- don't draw plot
@@ -44,8 +43,6 @@ begin
   res@xyMonoMarkerColor = False
   res@xyMarkerColors = "white" ;-- purposely make markers invisible (for right now)
 
-  ;** Put Tickmark resources options here (if needed)
-
   ;** Title Resources
   res@tiMainString = "Stars in Night Sky: Present Day"
   res@tiXAxisString = "Right Ascension [hr]"
@@ -59,14 +56,14 @@ begin
   draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
-  markerSizes = (/3, 2, 1, 0.008, 0.007, 0.006, 0.005, 0.004/)
+  markerSizes = (/0.040, 0.035, 0.030, 0.025, 0.020, 0.015, 0.010, 0.005/)
   labels  = (/"O", "B", "A", "F", "G", "K", "M", "+"/)
 
   newMarkers = True
   newMarkers@gsMarkerThicknessF = 3
 
   begin
-    do i = 0, 2 ;-- loop through starMag array
+    do i = 0, 7 ;-- loop through starMag array
       base = ind(mag .ge. starMag(i) .and. mag .lt. starMag(i+1)) ;-- find indices of given stellar magnitude threshold
       firstIndex = base(0)
       last = dimsizes(base) - 1 ;-- get last value of base array
@@ -88,11 +85,8 @@ begin
       delete(matches)
 
       ;** For class "B"
-      print(typeClass(firstIndex:lastIndex))
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
-      print(matches)
       if (.not. ismissing(matches(0))) then
-        print("RUNNING")
         newMarkers@gsMarkerColor = colors(1)
         newMarkers@gsMarkerIndex = 7 ;-- marker type
         raMatching = ra(matches(:))
@@ -104,11 +98,7 @@ begin
       delete(matches)
 
       ;** For class "A"
-      ; print(test(firstIndex:lastIndex))
-      ; substr = "A"
-      ; matches = str_index_of_substr(test(firstIndex:lastIndex), substr, 0)
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
-      ; print(matches)
       if (.not. ismissing(matches(0))) then
         newMarkers@gsMarkerColor = colors(2)
         newMarkers@gsMarkerIndex = 6 ;-- marker type
@@ -121,11 +111,8 @@ begin
       delete(matches)
 
       ;** For class "F"
-      ; print(typeClass(firstIndex:lastIndex))
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
-      ; print(matches)
       if (.not. ismissing(matches(0))) then
-        print("RUNNING HERE")
         newMarkers@gsMarkerColor = colors(3)
         newMarkers@gsMarkerIndex = 5 ;-- marker type
         raMatching = ra(matches(:))
@@ -202,6 +189,8 @@ begin
   txres@txFontHeightF = 0.018
   txres@txJust = "CenterLeft"
 
+  gsn_text_ndc(wks, "Spectral Class:", 0.09, 0.10, txres) ;-- add a headline that says "Spectral Class:"
+
   do i = 0, 7 ;-- assign attributes for each marker label
     mkres@gsMarkerThicknessF = 4
 
@@ -209,15 +198,13 @@ begin
     mkres@gsMarkerIndex = markers(i)
     mkres@gsMarkerColor = colors(i)
 
-    gsn_polymarker_ndc(wks, xpos(i), 0.07, mkres) ;-- Add markers to legend 
-    gsn_text_ndc(wks, labels(i), xpos2(i), 0.07, txres) ;-- Add text (that specify the markers) to legend
+    gsn_polymarker_ndc(wks, xpos(i), 0.06, mkres) ;-- Add markers to legend 
+    gsn_text_ndc(wks, labels(i), xpos2(i), 0.06, txres) ;-- Add text (that specify the markers) to legend
   end do
-
-  
+ 
   frame(wks)
 end
 
 
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
-;-- Why are all markers the same size? Fix problem with marker sizes....
