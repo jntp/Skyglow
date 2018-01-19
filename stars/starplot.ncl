@@ -21,9 +21,13 @@ begin
   wks = gsn_open_wks("png", "scat_plot")
 
   res = True
+  res@mpProjection = "Mollweide" ;-- equal area projection
+  res@mpGridAndLimbOn = True ;-- turn on lat/lon lines
+  res@mpPerimOn = False ;-- turn off box around plot
+  res@mpGridLatSpacingF = 30
+  res@mpGridLonSpacingF = 30
   res@gsnDraw = False ;-- don't draw plot
   res@gsnFrame = False ;-- don't advance frame
-  res@pmTickMarkDisplayMode = "Always" ;-- turn on fancy tickmarks
 
   ;** Specify where the plot goes
   res@vpXF = 0.20
@@ -52,7 +56,7 @@ begin
   res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
-  plot = gsn_csm_xy(wks, ra(0:4), dec(0:4), res)
+  ; plot = gsn_csm_contour_map(wks, , res) ;-- middle value must be 2D array
   draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
@@ -208,3 +212,4 @@ end
 
 ;-- Refer to scatter plot example 7
 ;-- Look into gsn_polymarker
+;-- Figure out how to change this chart to a Mollweide projection
