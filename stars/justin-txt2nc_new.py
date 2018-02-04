@@ -1,7 +1,7 @@
 from netCDF4 import Dataset
 
 #NC file setup
-root_grp = Dataset('scat.nc', 'w', format='NETCDF4')
+root_grp = Dataset('test.nc', 'w', format='NETCDF4')
 root_grp.createDimension('star', None)
 
 #Create variables
