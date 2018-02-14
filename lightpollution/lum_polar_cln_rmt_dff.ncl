@@ -54,7 +54,7 @@ begin
   res@cnFillPalette = newColors ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines 
   res@cnLevelSelectionMode = "ExplicitLevels"
-  res@cnLevels = (/-22, -18, -14, -10, -8, -6, -4, -3, -2, -1, 0/)
+  res@cnLevels = (/-12, -10, -8, -6, -4, -3, -2, -1, 0/)
   
   ;** Make the plot
   plot = gsn_csm_contour(wks, percentage, res) ;-- draw a contour plot 
