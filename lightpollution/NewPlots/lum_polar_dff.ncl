@@ -4,8 +4,8 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF files (two for calculating difference) 
-  diff = addfile("skg_swn_urb_ngl_dff.nc", "r") ;-- difference file
-  cont = addfile("skg_swn_urb_ngl_ctl.nc", "r") ;-- used to address "zero" issues in difference file and for calculating the percentage
+  diff = addfile("skg_swn_urb_xptmctl.nc", "r") ;-- difference file
+  cont = addfile("skg_swn_urb_ctl.nc", "r") ;-- used to address "zero" issues in difference file and for calculating the percentage
 
   ;** Read in data required for calculation 
   diff_lmn = diff->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -28,13 +28,13 @@ begin
   newColors = cmap(118:251, :) ;-- pick only part of the colormap
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "lum_polar_dff_16")  
+  wks = gsn_open_wks("png", "skg_lmn_urb_xptmcln_pz")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness - Difference"
+  res@tiMainString = "Urban Brightness: Difference (Geoengineered - Present Day)"
   res@tiXAxisString = "Zenith Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Change in Luminance"
