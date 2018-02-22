@@ -4,8 +4,8 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF files (two for calculating difference) 
-  diff = addfile("skg_swn_rmt_xptmctl.nc", "r") ;-- difference file
-  cont = addfile("skg_swn_rmt_ctl.nc", "r") ;-- used to address "zero" issues in difference file and for calculating the percentage
+  diff = addfile("skg_swn_rmt_xptmcln.nc", "r") ;-- difference file
+  cont = addfile("skg_swn_rmt_cln.nc", "r") ;-- used to address "zero" issues in difference file and for calculating the percentage
 
   ;** Read in data required for calculation 
   diff_lmn = diff->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -28,13 +28,13 @@ begin
   newColors = cmap(0:133, :) ;-- pick only part of the colormap
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_lmn_rmt_xptmctlz_pz")  
+  wks = gsn_open_wks("png", "skg_lmn_rmt_xptmcln_pz")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Remote Brightness: Difference (Geoengineered - Present Day)"
+  res@tiMainString = "Remote Brightness: Difference (Geoengineered - Clean Sky)"
   res@tiXAxisString = "Zenith Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Change in Luminance"
@@ -54,7 +54,7 @@ begin
   res@cnFillPalette = newColors ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines 
   res@cnLevelSelectionMode = "ExplicitLevels"
-  res@cnLevels = (/-10, -8, -6, -5, -4, -3, -2, -1, 0/)
+  res@cnLevels = (/-22, -18, -14, -12, -10, -8, -6, -4, -3, -2, -1, 0/)
   
   ;** Make the plot
   plot = gsn_csm_contour(wks, percentage, res) ;-- draw a contour plot 
