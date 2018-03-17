@@ -3,6 +3,8 @@ from netCDF4 import Dataset
 #NC file setup
 root_grp = Dataset('test.nc', 'w', format='NETCDF4')
 root_grp.createDimension('star', None)
+root_grp.createDimension('nbr_ra', None)
+root_grp.createDimension('nbr_dec', None)
 
 #Create variables
 sao_number = root_grp.createVariable('sao_number', 'i8', ('star',))
@@ -12,6 +14,11 @@ mag = root_grp.createVariable('mag', 'f8', ('star',))
 typeClass = root_grp.createVariable('typeClass', 'S2', ('star',))
 typeNumber = root_grp.createVariable('typeNumber', 'S2', ('star',))
 arcsec = root_grp.createVariable('arcsec', 'f8', ('star',))
+centerCoords = root_grp.createVariable('centerCoords', 'f8', ('nbr_ra', 'nbr_dec',))
+starDensity = root_grp.createVariable('starDensity', 'i8', ('nbr_ra', 'nbr_dec',)) 
+
+centerCoords.long_name = "Centered Right Ascension and Declination Coordinates"
+starDensity.long_name = "Star Density of Centered Right Ascension and Declination Coordinates" 
 
 #copy data
 ip_file = open('scat_data.txt', 'r')
