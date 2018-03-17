@@ -20,7 +20,7 @@ starDensity = root_grp.createVariable('starDensity', 'i8', ('nbr_ra', 'nbr_dec',
 centerCoords.long_name = "Centered Right Ascension and Declination Coordinates"
 starDensity.long_name = "Star Density of Centered Right Ascension and Declination Coordinates" 
 
-#copy data
+#copy data from scat_data.txt
 ip_file = open('scat_data.txt', 'r')
 ip_file.readline() #exclude the header
 
@@ -41,5 +41,30 @@ for line in ip_file:
 
 ip_file.close()
 
+# copy data from radec_decimals.txt
+ip_file2 = open('radec_decimals.txt', 'r')
+ip_file2.readline()
+
+for i, line in enumerate(ip_file2):
+    line = line.strip()
+    columns = columns.split()
+
+    centerCoords[i][0] = columns[0]
+    centerCoords[i][1] = columns[1]
+        
+ip_file2.close()
+
+# copy data from nbr_num.txt
+ip_file3 = open('nbr_num.txt', 'r')
+ip_file3.readline() 
+
+for i, line in enumerate(ip_file3):
+    line = line.strip()
+    columns = line.split()
+
+    StarDensity[i]
+
 #close netcdf file to save it
 root_grp.close()
+
+# You left off at appending nbr_num.txt to radec_decimals.txt so maybe StarDensity can work as a 2D array???
