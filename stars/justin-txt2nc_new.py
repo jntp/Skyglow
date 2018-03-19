@@ -14,7 +14,8 @@ mag = root_grp.createVariable('mag', 'f8', ('star',))
 typeClass = root_grp.createVariable('typeClass', 'S2', ('star',))
 typeNumber = root_grp.createVariable('typeNumber', 'S2', ('star',))
 arcsec = root_grp.createVariable('arcsec', 'f8', ('star',))
-centerCoords = root_grp.createVariable('centerCoords', 'f8', ('nbr_ra', 'nbr_dec',))
+centerRa = root_grp.createVariable('centerCoords', 'f8', ('nbr_ra'))
+centerDec = root_grp.createVariable('centerDec', 'f8', ('nbr_dec',))
 starDensity = root_grp.createVariable('starDensity', 'i8', ('nbr_ra', 'nbr_dec',)) 
 
 centerCoords.long_name = "Centered Right Ascension and Declination Coordinates"
@@ -41,30 +42,22 @@ for line in ip_file:
 
 ip_file.close()
 
-# copy data from radec_decimals.txt
+#copy data from radec_decimals.txt
 ip_file2 = open('radec_decimals.txt', 'r')
 ip_file2.readline()
 
 for i, line in enumerate(ip_file2):
     line = line.strip()
-    columns = columns.split()
-
-    centerCoords[i][0] = columns[0]
-    centerCoords[i][1] = columns[1]
-        
-ip_file2.close()
-
-# copy data from nbr_num.txt
-ip_file3 = open('nbr_num.txt', 'r')
-ip_file3.readline() 
-
-for i, line in enumerate(ip_file3):
-    line = line.strip()
     columns = line.split()
 
-    StarDensity[i]
+    centerRa[i] = columns[0]
+    centerDec[i] = columns[1]
+    
+    starDensity[i][0] = columns[3] # ??????
+    starDensity[i][1] = columns[0] # ??????
+    starDensity[i][2] = columns[1] # ??????
+
+ip_file2.close()
 
 #close netcdf file to save it
 root_grp.close()
-
-# You left off at appending nbr_num.txt to radec_decimals.txt so maybe StarDensity can work as a 2D array???
