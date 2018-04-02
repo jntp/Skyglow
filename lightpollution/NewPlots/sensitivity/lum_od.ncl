@@ -1,24 +1,21 @@
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
-;** Make scatter plot
-;** Every oda, odb, odc file will have one point
 
 begin
 
   ;** Make/declare variables here?
-  str_names = (/"0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10", "0.11", "0.12", "0.13", "0.14", "0.15",
-                "0.16", "0.17", "0.18", "0.19", "0.20", "0.21", "0.21", "0.22", "0.23", "0.24", "0.25", "0.26", "0.27", "0.28", "0.29", "0.30"/)
-  oda = new(30, float)
-  odb = new(30, float)
-  odc = new(30, float)
+  str_names = (/"0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10", "0.11", "0.12", "0.13", "0.14", "0.15", "0.16", "0.17", "0.18", "0.19", "0.20", "0.21", "0.21", "0.22", "0.23", "0.24", "0.25", "0.26", "0.27", "0.28", "0.29", "0.30"/)
+  oda = new(32, float)
+  odb = new(32, float)
+  odc = new(32, float)
   
-  lmn_oda = new(30, float)
-  lmn_odb = new(30, float)
-  lmn_odc = new(30, float)
+  lmn_oda = new(32, float)
+  lmn_odb = new(32, float)
+  lmn_odc = new(32, float)
 
   ;** Add data to oda, odb, and odc arrays
-  do i=0,30
+  do i=0,31
     ;** Read in netCDF files
     input_str_oda = "skg_swn_urb_oda_" + str_names(i) + ".nc"
     input_str_odb = "skg_swn_urb_odb_" + str_names(i) + ".nc"
@@ -45,16 +42,16 @@ begin
     ;* Get lmn_bb_aa_ndr_sfc, which will represent the y-axis
     lmn_data_oda = file_oda->lmn_bb_aa_ndr_sfc
     lmn_data_odb = file_odb->lmn_bb_aa_ndr_sfc
-    lmn_data_odc = flle_odc->lmn_bb_aa_ndr_sfc
+    lmn_data_odc = file_odc->lmn_bb_aa_ndr_sfc
 
     ;** Hard-code data into arrays
     oda(i) = odxc_oda
     odb(i) = odxc_odb
     odc(i) = odxc_odc
 
-    lmn_oda = lmn_data_oda
-    lmn_odb = lmn_data_odb
-    lmn_odc = lmn_data_odc
+    lmn_oda(i) = lmn_data_oda
+    lmn_odb(i) = lmn_data_odb
+    lmn_odc(i) = lmn_data_odc
   end do
 
   ;** Create x and y and name attributes
@@ -75,21 +72,12 @@ begin
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
   res@tiMainString = "Urban Brightness Sensitivity Tests"
-  res@tiYAxisString = "Optical Depth [fraction]" 
-  res@tiXAxisString = "Zenith-viewing Luminance [mcd m~S~-2~N~]"
+  res@tiXAxisString = "Aerosol Extinction Optical Depth [fraction]" 
+  res@tiYAxisString = "Zenith-viewing Luminance [mcd m~S~-2~N~]"
   res@tiMainFontHeightF = 0.025
   res@tiXAxisFontHeightF = 0.020
   res@tiYAxisFontHeightF = 0.020
   res@xyLineThicknessF = 5
-  res@trYReverse = True ;-- reverse Y-axis
-  ; res@trYMinF = 0 ;-- y axis minimum value
-  ; res@trYMaxF = 1000 ;-- y axis maximum value
-
-  ;-- NOTE... FOR URBAN AREAS, CHOOSE BETWEEN 0 and 2.8
-  ;-- FOR REMOTE, CHOOSE BETWEEN 0.164 and 0.174
-  ; res@trXMinF = 0 ;-- x axis minimum value
-  ; res@trXMaxF = 2.8 ;-- x axis maximum value
-  
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"blue", "green", "black"/) 
 
@@ -101,10 +89,8 @@ begin
   res@pmLegendDisplayMode = "Always" ;-- turn on legend
   res@pmLegendSide = "Top" ;-- position of legend (what side)
 
-  ;-- NOTE... FOR URBAN AREAS, CHOOSE 0.73 for ParallelPos and -0.38 for OrthogonalPos
-  ;-- FOR REMOTE, CHOOSE 0.24 for ParallelPos and -0.34 for OrthogonalPos
-  res@pmLegendParallelPosF = 0.73 ;-- move units right
-  res@pmLegendOrthogonalPosF = -0.38 ;-- move units down
+  res@pmLegendParallelPosF = 0.81 ;-- move units right
+  res@pmLegendOrthogonalPosF = -0.95 ;-- move units down
 
   res@lgPerimOn = False ;-- turn off legend perimeter
   res@pmLegendWidthF = 0.11
@@ -120,5 +106,3 @@ begin
   frame(wks)
 
 end
-
-;-- You left off on debugging the script and finishing the plot.
