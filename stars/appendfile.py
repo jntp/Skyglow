@@ -20,14 +20,34 @@ with open("radec_decimals.txt", "w") as file:
     # Strip off newlines off line and nbr_num
     line = line.strip('\n')
     nbr_num[i] = nbr_num[i].strip('\n')
-    
-    # Convert nbr_num (star density) to number of stars per sterradian
-    # Add 5 and subtract 5 degrees to get fringe values
-    # math.sin() then calculate sterradians
 
     # Convert right ascension to degrees longitude
     setValues = line.split(" ")
     deg_lon = float(setValues[0]) * 15
+
+    # Convert nbr_num (star density) to number of stars per sterradian
+    # Add 5 and subtract 5 degrees to get fringe values
+    # math.sin() then calculate sterradians
+    ra_upper = deg_lon + 5
+    ra_lower = deg_lon - 5
+    if ra_lower < 0: # adjust to zero if the lower ra value ends up less than zero
+      ra_lower = 0
+
+    dec_upper = float(setValues[1]) + 5
+    dec_lower = float(setValues[1]) - 5
+
+    # Plug in mathematical formula to find the sterradian for each centered ra and dec value
+    # Originally taking the integral of r^2*cos(y)dydx
+    # After integrating, you get [sin(y2) - sin(y1)]*[x2 - x1]
+    delta_sin_y = math.sin(dec_upper) - math.sin(dec_lower)
+    delta_x = ra_upper - ra_lower
+    sterradian = delta_sin_y * delta_x
+
+    # Divide nbr_num by sterradian to obtain proper units
+    starDensity = float(nbr_num[i]) / sterradian
+    print(starDensity)
+    nbr_num[i] = str(int(starDensity))
+    print(nbr_num[i])
 
     # Concatenate converted ra as well as the star density to string
     str_lon = str(deg_lon) # convert deg_lon to string and store in a variable
@@ -48,3 +68,4 @@ with open("radec_decimals.txt", "w") as file:
 file.close()
 
 # You left off at dividing star density by number of stars per sterradian
+# What? Why are you getting negative numbers
