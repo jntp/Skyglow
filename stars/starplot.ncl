@@ -6,19 +6,59 @@ begin
 
   ;** Read in netCDF files
   scat = addfile("scat.nc", "r")
+  test = addfile("atmos.nc", "r")
   
-  ;** Read in data requried for plotting
+  ;** Read in data required for plotting
   ra = scat->ra2000 ;-- right ascension
   dec = scat->dec2000 ;-- declination
   mag = scat->mag ;-- stellar magnitude
   typeClass = scat->typeClass ;-- star type (character)
-  test = typeClass
+  starDensity_1D = scat->starDensity ;-- star density (in number of stars per steradian)
+  testTS = test->TS
+  printVarSummary(testTS)
+
+  ;** Create starDensity 2D matrix and transpose the starDensity_1D 1D array to the 2D matrix
+  starDensity = new((/35,71/), float) ;-- create 35x71 2D matrix
+  
+  ;* Create dec_lat and ra_lon variables and its attributes first... to later store as part of starDensity
+  dec_lat = new(35, float)
+  do i = 0, 34
+    dec_lat(i) = -85 + i*5
+  end do
+  dec_lat@long_name = "Declination in units latitude"
+  dec_lat@units = "degrees_north"
+
+  ra_lon = new(71, float)
+  do i = 0, 70
+    ra_lon(i) = 5 + i*5
+  end do
+  ra_lon@long_name = "Right ascension in units longitude"
+  ra_lon@units = "degrees_east"
+
+  ;* Transpose the starDensity_1D array to a 2D matrix
+  do i = 0, 34 ;-- loop through each latitude (declination) index
+    do j = 0, 70 ;-- loop through each longitude (right ascension) index
+      starDensity(i,j) = starDensity_1D(j + 71*i)    
+    end do
+  end do
+
+  ;* Assign coordinates and attributes
+  starDensity!0 = "dec_lat"
+  starDensity!1 = "ra_lon"
+  starDensity@long_name = "Star Density"
+  starDensity@units = "number of stars per steradian" 
+  starDensity&dec_lat = dec_lat
+  starDensity&ra_lon = ra_lon
+
+  ;********** YOU LEFT OFF HERE
+
+  ; print(starDensity)
 
   ;** Create custom colormap to color in markers
   colors = (/"midnightblue", "mediumblue", "dodgerblue3", "gray10", "coral2", "firebrick2", "red1", "black"/)
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "scat_plot")
+  wks = gsn_open_wks("png", "scat_plot_proj")
 
   res = True
   res@mpProjection = "Mollweide" ;-- equal area projection
@@ -49,14 +89,14 @@ begin
 
   ;** Title Resources
   res@tiMainString = "Stars in Night Sky: Present Day"
-  res@tiXAxisString = "Right Ascension [hr]"
+  res@tiXAxisString = "Right Ascension [deg]"
   res@tiYAxisString = "Declination [deg]"
   res@tiMainFontHeightF = 0.0225
   res@tiXAxisFontHeightF = 0.020
   res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
-  ; plot = gsn_csm_contour_map(wks, , res) ;-- middle value must be 2D array
+  plot = gsn_csm_contour_map(wks, starDensity, res) ;-- middle value must be 2D array
   draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
@@ -211,5 +251,4 @@ end
 
 
 ;-- Refer to scatter plot example 7
-;-- Look into gsn_polymarker
-;-- Figure out how to change this chart to a Mollweide projection
+;-- You left off at defining the attributes and coordinates of StarDensity

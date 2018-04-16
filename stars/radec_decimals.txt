@@ -1,4 +1,4 @@
-CenterRA CenterDec StarDensity
+CenterRa CenterDec StarDensity
 4.999995 -85.00000 72
 4.999995 -80.00000 42
 4.999995 -75.00000 17
