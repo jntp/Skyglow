@@ -14,8 +14,13 @@ begin
   mag = scat->mag ;-- stellar magnitude
   typeClass = scat->typeClass ;-- star type (character)
   starDensity_1D = scat->starDensity ;-- star density (in number of stars per steradian)
-  testTS = test->TS
-  printVarSummary(testTS)
+  testTS = test->TS(0,:,:)
+  ; printVarSummary(testTS)
+
+  ;** Convert right ascension to degrees longitude
+  do i = 0, dimsizes(ra) - 1
+    ra(i) = ra(i) * 15 ;-- multiply by 360 degrees/24 hours
+  end do
 
   ;** Create starDensity 2D matrix and transpose the starDensity_1D 1D array to the 2D matrix
   starDensity = new((/35,71/), float) ;-- create 35x71 2D matrix
@@ -30,7 +35,7 @@ begin
 
   ra_lon = new(71, float)
   do i = 0, 70
-    ra_lon(i) = 5 + i*5
+    ra_lon(i) = 0 + i*5
   end do
   ra_lon@long_name = "Right ascension in units longitude"
   ra_lon@units = "degrees_east"
@@ -43,16 +48,16 @@ begin
   end do
 
   ;* Assign coordinates and attributes
-  starDensity!0 = "dec_lat"
-  starDensity!1 = "ra_lon"
+  starDensity!0 = "lat"
+  starDensity!1 = "lon"
   starDensity@long_name = "Star Density"
-  starDensity@units = "number of stars per steradian" 
-  starDensity&dec_lat = dec_lat
-  starDensity&ra_lon = ra_lon
+  starDensity@units = "number of stars per steradian"  
+  starDensity&lat = dec_lat
+  starDensity&lon = ra_lon
 
   ;********** YOU LEFT OFF HERE
 
-  ; print(starDensity)
+  printVarSummary(starDensity)
 
   ;** Create custom colormap to color in markers
   colors = (/"midnightblue", "mediumblue", "dodgerblue3", "gray10", "coral2", "firebrick2", "red1", "black"/)
@@ -67,18 +72,19 @@ begin
   res@mpGridLatSpacingF = 30
   res@mpGridLonSpacingF = 30
   res@gsnDraw = False ;-- don't draw plot
-  res@gsnFrame = False ;-- don't advance frame
+  res@gsnFrame = False ;-- don't advance frame 
+  res@gsnAddCyclic = False
+
+  ;** Set color map of contour plot
+  res@cnFillOn = True
+  res@cnFillPalette = "MPL_Blues" ;-- set color map
+  res@cnLineLabelsOn = False ;-- turn off contour lines
 
   ;** Specify where the plot goes
   res@vpXF = 0.20
   res@vpYF = 0.90
   res@vpWidthF = 0.65
   res@vpHeightF = 0.65
-
-  res@trXMinF = 0 ;-- right ascension
-  res@trXMaxF = 24
-  res@trYMinF = -90 ;-- declination
-  res@trYMaxF = 90
 
   ;** Marker Resources
   res@xyMarkLineMode = "Markers"
@@ -249,6 +255,6 @@ begin
   frame(wks)
 end
 
-
+;-- How to turn off the map?!
 ;-- Refer to scatter plot example 7
-;-- You left off at defining the attributes and coordinates of StarDensity
+;-- You left off at making the plot look readable?
