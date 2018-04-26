@@ -6,7 +6,6 @@ begin
 
   ;** Read in netCDF files
   scat = addfile("scat.nc", "r")
-  test = addfile("atmos.nc", "r")
   
   ;** Read in data required for plotting
   ra = scat->ra2000 ;-- right ascension
@@ -14,8 +13,6 @@ begin
   mag = scat->mag ;-- stellar magnitude
   typeClass = scat->typeClass ;-- star type (character)
   starDensity_1D = scat->starDensity ;-- star density (in number of stars per steradian)
-  testTS = test->TS(0,:,:)
-  ; printVarSummary(testTS)
 
   ;** Convert right ascension to degrees longitude
   do i = 0, dimsizes(ra) - 1
@@ -28,14 +25,14 @@ begin
   ;* Create dec_lat and ra_lon variables and its attributes first... to later store as part of starDensity
   dec_lat = new(35, float)
   do i = 0, 34
-    dec_lat(i) = -85 + i*5
+    dec_lat(i) = -85 + i*5 ;-- (/-85, ... , 85/)
   end do
   dec_lat@long_name = "Declination in units latitude"
   dec_lat@units = "degrees_north"
 
   ra_lon = new(71, float)
   do i = 0, 70
-    ra_lon(i) = 0 + i*5
+    ra_lon(i) = 0 + i*5 ;-- (/0, ... , 360/)
   end do
   ra_lon@long_name = "Right ascension in units longitude"
   ra_lon@units = "degrees_east"
@@ -73,11 +70,10 @@ begin
   res@mpGridLonSpacingF = 30
   res@gsnDraw = False ;-- don't draw plot
   res@gsnFrame = False ;-- don't advance frame 
-  res@gsnAddCyclic = False
 
   ;** Set color map of contour plot
   res@cnFillOn = True
-  res@cnFillPalette = "MPL_Blues" ;-- set color map
+  res@cnFillPalette = "helix1" ;-- set color map
   res@cnLineLabelsOn = False ;-- turn off contour lines
 
   ;** Specify where the plot goes
@@ -85,13 +81,6 @@ begin
   res@vpYF = 0.90
   res@vpWidthF = 0.65
   res@vpHeightF = 0.65
-
-  ;** Marker Resources
-  res@xyMarkLineMode = "Markers"
-  res@xyMarkerSizeF = 0.008 ;-- will revise later (to account for varying sizes of different magnitudes)
-  res@xyMarkerThicknessF = 3
-  res@xyMonoMarkerColor = False
-  res@xyMarkerColors = "white" ;-- purposely make markers invisible (for right now)
 
   ;** Title Resources
   res@tiMainString = "Stars in Night Sky: Present Day"
