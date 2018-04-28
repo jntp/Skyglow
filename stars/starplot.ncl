@@ -56,9 +56,6 @@ begin
 
   printVarSummary(starDensity)
 
-  ;** Create custom colormap to color in markers
-  colors = (/"midnightblue", "mediumblue", "dodgerblue3", "gray10", "coral2", "firebrick2", "red1", "black"/)
-
   ;** Prepare plot
   wks = gsn_open_wks("png", "scat_plot_proj")
 
@@ -70,10 +67,11 @@ begin
   res@mpGridLonSpacingF = 30
   res@gsnDraw = False ;-- don't draw plot
   res@gsnFrame = False ;-- don't advance frame 
+  res@mpGeophysicalLineColor = "white"
 
   ;** Set color map of contour plot
   res@cnFillOn = True
-  res@cnFillPalette = "helix1" ;-- set color map
+  res@cnFillPalette = "MPL_PuBu" ;-- set color map
   res@cnLineLabelsOn = False ;-- turn off contour lines
 
   ;** Specify where the plot goes
@@ -100,6 +98,7 @@ begin
 
   newMarkers = True
   newMarkers@gsMarkerThicknessF = 3
+  newMarkers@gsMarkerColor = "firebrick2"
 
   begin
     do i = 0, 7 ;-- loop through starMag array
@@ -112,8 +111,7 @@ begin
 
       ;** For class "O"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "O") ;-- find the indices of a spectral class "O"
-      if (.not. ismissing(matches(0))) then ;-- check for no matches at all
-        newMarkers@gsMarkerColor = colors(0)
+      if (.not. ismissing(matches(0))) then ;-- check for no matches at all 
         newMarkers@gsMarkerIndex = 9 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -125,8 +123,7 @@ begin
 
       ;** For class "B"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(1)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 7 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -138,8 +135,7 @@ begin
 
       ;** For class "A"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(2)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 6 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -151,8 +147,7 @@ begin
 
       ;** For class "F"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(3)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 5 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -164,8 +159,7 @@ begin
 
       ;** For class "G"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "G")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(4)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 4 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -178,7 +172,6 @@ begin
       ;** For class "K"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "K")
       if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(5)
         newMarkers@gsMarkerIndex = 3 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -190,8 +183,7 @@ begin
 
       ;** For class "M"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "M")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(6)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 2 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -203,8 +195,7 @@ begin
 
       ;** For class "+"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "+")
-      if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerColor = colors(7)
+      if (.not. ismissing(matches(0))) then 
         newMarkers@gsMarkerIndex = 15 ;-- marker type
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
@@ -234,8 +225,8 @@ begin
     mkres@gsMarkerThicknessF = 4
 
     mkres@gsMarkerSizeF = 0.025
-    mkres@gsMarkerIndex = markers(i)
-    mkres@gsMarkerColor = colors(i)
+    mkres@gsMarkerColor = "firebrick2"
+    mkres@gsMarkerIndex = markers(i) 
 
     gsn_polymarker_ndc(wks, xpos(i), 0.06, mkres) ;-- Add markers to legend 
     gsn_text_ndc(wks, labels(i), xpos2(i), 0.06, txres) ;-- Add text (that specify the markers) to legend
