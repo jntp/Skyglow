@@ -2,6 +2,76 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 
+;** Start by creating a function for adding grid labels to the "map"
+function add_mollweide_labels(wks, map, decspc, raspc)
+local dec_values, ra_values, ndec, nra, txres, dum_lft, dum_rgt, dum_bot
+begin
+  mindec = -90
+  maxdec = 90
+  minra = 0
+  maxra = 360
+
+  ;** Pick some "nice" values for the declination labels
+  dec_values = ispan(mindec, maxdec, decspc) * 1. ;-- multiply by 1. to create float array
+  ra_values = ispan(minra, maxra, raspc) * 1. 
+  ndec = dimsizes(dec_values)
+  nra = dimsizes(ra_values)
+
+  ;** Set some text resources
+  txres = True
+  txres@txFontHeightF = 0.01
+
+  ;** Create dummy arrays to hold attached strings
+  dum_lft = new(ndec, graphic)
+  dum_rgt = new(ndec, graphic)
+
+  ;** Create the labels
+  ;* Declination
+  dec_lft_label = where(dec_values .gt. 0, "+" + dec_values, dec_values) ;-- add a '+' sign to declinations greater than zero
+  dec_lft_label = where(abs(dec_values) .eq. 90, "", dec_lft_label) ;-- no label at -90 or +90 degrees
+  dec_rgt_label = "  " + dec_rgt_label ;-- add space before the right labels
+  dec_lft_label = dec_lft_label + "  " ;-- add space after the left labels
+
+  ;** Loop through dec values and attach labels to left and right edges of plot
+  do i=0, ndec - 1
+    ;* Left Label
+    txres@txJust = "CenterRight"
+    dum_lft(i) = gsn_add_text(wks, map, dec_lft_label(i), minra, dec_values(i), txres)
+
+    ;* Right Label
+    txres@txJust = "CenterLeft"
+    dum_rgt(i) = gsn_add_text(wks, map, dec_rgt_label(i), maxra, dec_values(i), txres)
+  end do
+
+  ;* Right Ascension
+  ra_bot_label = ra_values
+  ra_bot_label = where(ra_values .eq. 0 .or. ra_values .eq. 360, "", ra_bot_label) ;-- no label at 0 or 360 degrees
+
+  dum_top = new(nra, graphic)
+  dum_bot = new(nra, graphic)
+
+  ;** Loop through the ra values and attach labels to top and bottom edges of plot
+  do i=0, nra - 1
+    ;* Top Label
+    txres@txJust = "BottomCenter"
+    dum_top(i) = gsn_add_text(wks, map, ra_bot_label(i), ra_values(i), minra, txres)
+  
+    ;* Bottom Label
+    txres@txJust = "TopCenter"
+    dum_bot(i) = gsn_add_text(wks, map, ra_bot_label(i), ra_values(i), minra, txres)
+  end do
+
+  ;** Make sure these IDs "live" outside this function
+  map@dumlft = dum_lft
+  map@dumrgt = dum_rgt
+  map@dumtop = dum_top
+  map@topbot = dum_bot
+
+  return(map)
+end
+
+
+;** Begin main code
 begin
 
   ;** Read in netCDF files
@@ -48,7 +118,7 @@ begin
   starDensity!0 = "lat"
   starDensity!1 = "lon"
   starDensity@long_name = "Star Density"
-  starDensity@units = "number of stars per steradian"  
+  starDensity@units = "M_v < X.Y sr~S~-1~N~"  
   starDensity&lat = dec_lat
   starDensity&lon = ra_lon
 
@@ -67,7 +137,7 @@ begin
   res@mpGridLonSpacingF = 30
   res@gsnDraw = False ;-- don't draw plot
   res@gsnFrame = False ;-- don't advance frame 
-  res@mpGeophysicalLineColor = "white"
+  res@mpGeophysicalLineColor = "white" ;-- make the map invisible
 
   ;** Set color map of contour plot
   res@cnFillOn = True
@@ -232,9 +302,12 @@ begin
     gsn_text_ndc(wks, labels(i), xpos2(i), 0.06, txres) ;-- Add text (that specify the markers) to legend
   end do
  
+  ;** Attach grid labels to the plot
+  map = add_mollweide_labels(wks, plot, 30, 30)
+
   frame(wks)
 end
 
-;-- How to turn off the map?!
-;-- Refer to scatter plot example 7
-;-- You left off at making the plot look readable?
+;-- How to add grid labels to your plot?!
+;-- Refer to Map Tickmarks example 12 (and maybe 10)
+;-- You left off at testing and debugging the script
