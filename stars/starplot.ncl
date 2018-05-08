@@ -4,7 +4,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 ;** Start by creating a function for adding grid labels to the "map"
 function add_mollweide_labels(wks, map, decspc, raspc)
-local dec_values, ra_values, ndec, nra, txres, dum_lft, dum_rgt, dum_bot
+local dec_values, ra_values, ndec, nra, txres, dum_lft, dum_rgt, dum_cen
 begin
   mindec = -90
   maxdec = 90
@@ -29,7 +29,7 @@ begin
   ;* Declination
   dec_lft_label = where(dec_values .gt. 0, "+" + dec_values, dec_values) ;-- add a '+' sign to declinations greater than zero
   dec_lft_label = where(abs(dec_values) .eq. 90, "", dec_lft_label) ;-- no label at -90 or +90 degrees
-  dec_rgt_label = "  " + dec_rgt_label ;-- add space before the right labels
+  dec_rgt_label = "  " + dec_lft_label ;-- add space before the right labels
   dec_lft_label = dec_lft_label + "  " ;-- add space after the left labels
 
   ;** Loop through dec values and attach labels to left and right edges of plot
@@ -44,28 +44,20 @@ begin
   end do
 
   ;* Right Ascension
-  ra_bot_label = ra_values
-  ra_bot_label = where(ra_values .eq. 0 .or. ra_values .eq. 360, "", ra_bot_label) ;-- no label at 0 or 360 degrees
+  ra_cen_label = where(ra_values .eq. 180 .or. ra_values .eq. 360, "", ra_values) ;-- no label at 0 or 360 degrees
 
-  dum_top = new(nra, graphic)
-  dum_bot = new(nra, graphic)
+  dum_cen = new(nra, graphic)
 
   ;** Loop through the ra values and attach labels to top and bottom edges of plot
   do i=0, nra - 1
-    ;* Top Label
-    txres@txJust = "BottomCenter"
-    dum_top(i) = gsn_add_text(wks, map, ra_bot_label(i), ra_values(i), minra, txres)
-  
-    ;* Bottom Label
-    txres@txJust = "TopCenter"
-    dum_bot(i) = gsn_add_text(wks, map, ra_bot_label(i), ra_values(i), minra, txres)
+    txres@txJust = "CenterCenter"
+    dum_cen(i) = gsn_add_text(wks, map, ra_cen_label(i), ra_values(i), minra, txres)
   end do
 
   ;** Make sure these IDs "live" outside this function
   map@dumlft = dum_lft
   map@dumrgt = dum_rgt
-  map@dumtop = dum_top
-  map@topbot = dum_bot
+  map@dumcen = dum_cen
 
   return(map)
 end
@@ -152,18 +144,21 @@ begin
 
   ;** Title Resources
   res@tiMainString = "Stars in Night Sky: Present Day"
-  res@tiXAxisString = "Right Ascension [deg]"
-  res@tiYAxisString = "Declination [deg]"
+  ; res@tiXAxisString = "Right Ascension [deg]"
+  ; res@tiYAxisString = "Declination [deg]"
   res@tiMainFontHeightF = 0.0225
-  res@tiXAxisFontHeightF = 0.020
-  res@tiYAxisFontHeightF = 0.020
+  ; res@tiXAxisFontHeightF = 0.020
+  ; res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
   plot = gsn_csm_contour_map(wks, starDensity, res) ;-- middle value must be 2D array
+
+  ;** Attach grid labels to the plot
+  map = add_mollweide_labels(wks, plot, 30, 30)
   draw(plot)
 
   starMag = (/-2, -1, 0, 1, 2, 3, 4, 5, 6/)
-  markerSizes = (/0.040, 0.035, 0.030, 0.025, 0.020, 0.015, 0.010, 0.005/)
+  markerSizes = (/0.020, 0.0175, 0.015, 0.0125, 0.010, 0.0075, 0.005, 0.0025/)
   labels  = (/"O", "B", "A", "F", "G", "K", "M", "+"/)
 
   newMarkers = True
@@ -182,7 +177,7 @@ begin
       ;** For class "O"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "O") ;-- find the indices of a spectral class "O"
       if (.not. ismissing(matches(0))) then ;-- check for no matches at all 
-        newMarkers@gsMarkerIndex = 9 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 9
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) ;-- draws new markers of spectral class "O"
@@ -194,7 +189,7 @@ begin
       ;** For class "B"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "B")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 7 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 7
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers)
@@ -206,7 +201,7 @@ begin
       ;** For class "A"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "A")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 6 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 6
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -218,7 +213,7 @@ begin
       ;** For class "F"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "F")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 5 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 5
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -230,7 +225,7 @@ begin
       ;** For class "G"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "G")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 4 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 4
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -242,7 +237,7 @@ begin
       ;** For class "K"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "K")
       if (.not. ismissing(matches(0))) then
-        newMarkers@gsMarkerIndex = 3 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 3
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -254,7 +249,7 @@ begin
       ;** For class "M"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "M")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 2 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 2
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -266,7 +261,7 @@ begin
       ;** For class "+"
       matches = ind(typeClass(firstIndex:lastIndex) .eq. "+")
       if (.not. ismissing(matches(0))) then 
-        newMarkers@gsMarkerIndex = 15 ;-- marker type
+        newMarkers@gsMarkerIndex = 3 ;-- marker type 15
         raMatching = ra(matches(:))
         decMatching = dec(matches(:))
         gsn_polymarker(wks, plot, raMatching, decMatching, newMarkers) 
@@ -286,10 +281,10 @@ begin
 
   mkres = True ;-- marker resources
   txres = True ;-- text resources
-  txres@txFontHeightF = 0.018
-  txres@txJust = "CenterLeft"
+  ; txres@txFontHeightF = 0.018
+  ; txres@txJust = "CenterLeft"
 
-  gsn_text_ndc(wks, "Spectral Class:", 0.09, 0.10, txres) ;-- add a headline that says "Spectral Class:"
+  ; gsn_text_ndc(wks, "Spectral Class:", 0.09, 0.10, txres) ;-- add a headline that says "Spectral Class:"
 
   do i = 0, 7 ;-- assign attributes for each marker label
     mkres@gsMarkerThicknessF = 4
@@ -298,13 +293,10 @@ begin
     mkres@gsMarkerColor = "firebrick2"
     mkres@gsMarkerIndex = markers(i) 
 
-    gsn_polymarker_ndc(wks, xpos(i), 0.06, mkres) ;-- Add markers to legend 
-    gsn_text_ndc(wks, labels(i), xpos2(i), 0.06, txres) ;-- Add text (that specify the markers) to legend
+    ; gsn_polymarker_ndc(wks, xpos(i), 0.06, mkres) ;-- Add markers to legend 
+    ; gsn_text_ndc(wks, labels(i), xpos2(i), 0.06, txres) ;-- Add text (that specify the markers) to legend
   end do
  
-  ;** Attach grid labels to the plot
-  map = add_mollweide_labels(wks, plot, 30, 30)
-
   frame(wks)
 end
 
