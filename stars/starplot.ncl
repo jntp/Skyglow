@@ -4,48 +4,24 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 
 ;** Start by creating a function for adding grid labels to the "map"
 function add_mollweide_labels(wks, map, decspc, raspc)
-local dec_values, ra_values, ndec, nra, txres, dum_lft, dum_rgt, dum_cen
+local ra_values, nra, txres, dum_cen
 begin
-  mindec = -90
-  maxdec = 90
   minra = 0
   maxra = 360
 
   ;** Pick some "nice" values for the declination labels
-  dec_values = ispan(mindec, maxdec, decspc) * 1. ;-- multiply by 1. to create float array
   ra_values = ispan(minra, maxra, raspc) * 1. 
-  ndec = dimsizes(dec_values)
   nra = dimsizes(ra_values)
 
   ;** Set some text resources
   txres = True
   txres@txFontHeightF = 0.01
 
-  ;** Create dummy arrays to hold attached strings
-  dum_lft = new(ndec, graphic)
-  dum_rgt = new(ndec, graphic)
-
-  ;** Create the labels
-  ;* Declination
-  dec_lft_label = where(dec_values .gt. 0, "+" + dec_values, dec_values) ;-- add a '+' sign to declinations greater than zero
-  dec_lft_label = where(abs(dec_values) .eq. 90, "", dec_lft_label) ;-- no label at -90 or +90 degrees
-  dec_rgt_label = "  " + dec_lft_label ;-- add space before the right labels
-  dec_lft_label = dec_lft_label + "  " ;-- add space after the left labels
-
-  ;** Loop through dec values and attach labels to left and right edges of plot
-  do i=0, ndec - 1
-    ;* Left Label
-    txres@txJust = "CenterRight"
-    dum_lft(i) = gsn_add_text(wks, map, dec_lft_label(i), minra, dec_values(i), txres)
-
-    ;* Right Label
-    txres@txJust = "CenterLeft"
-    dum_rgt(i) = gsn_add_text(wks, map, dec_rgt_label(i), maxra, dec_values(i), txres)
-  end do
-
   ;* Right Ascension
-  ra_cen_label = where(ra_values .eq. 180 .or. ra_values .eq. 360, "", ra_values) ;-- no label at 0 or 360 degrees
+  ;** Create the labels
+  ra_cen_label = where(ra_values .eq. 180 .or. ra_values .eq. 360, "", ra_values + "~S~o~N") ;-- no label at 0 or 360 degrees
 
+  ;** Create dummy arrays to hold attached strings
   dum_cen = new(nra, graphic)
 
   ;** Loop through the ra values and attach labels to top and bottom edges of plot
@@ -55,8 +31,6 @@ begin
   end do
 
   ;** Make sure these IDs "live" outside this function
-  map@dumlft = dum_lft
-  map@dumrgt = dum_rgt
   map@dumcen = dum_cen
 
   return(map)
@@ -109,14 +83,10 @@ begin
   ;* Assign coordinates and attributes
   starDensity!0 = "lat"
   starDensity!1 = "lon"
-  starDensity@long_name = "Star Density"
-  starDensity@units = "M_v < X.Y sr~S~-1~N~"  
+  starDensity@long_name = "Star Density [# (M_v < 6.0) sr~S~-1~N~]"
+  starDensity@units = "N = 5104"  
   starDensity&lat = dec_lat
   starDensity&lon = ra_lon
-
-  ;********** YOU LEFT OFF HERE
-
-  printVarSummary(starDensity)
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "scat_plot_proj")
