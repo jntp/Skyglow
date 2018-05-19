@@ -83,8 +83,8 @@ begin
   ;* Assign coordinates and attributes
   starDensity!0 = "lat"
   starDensity!1 = "lon"
-  starDensity@long_name = "Star Density [# (M_v < 6.0) sr~S~-1~N~]"
-  starDensity@units = "N = 0"  
+  starDensity@long_name = "Star Density [# (M~B~v~N~ < 6.0) sr~S~-1~N~]"
+  starDensity@units = "N = 5104"
   starDensity&lat = dec_lat
   starDensity&lon = ra_lon
 
@@ -132,6 +132,48 @@ begin
   frame(wks)
 end
 
-;-- How to add grid labels to your plot?!
-;-- Refer to Map Tickmarks example 12 (and maybe 10)
-;-- You left off at fixing/adjusting the grid labels
+
+;** Make new netcdf file
+
+begin
+
+  ;** Declare file names
+  diri = "./"
+  outfile = "scat2D.ncl"
+
+  ;** Make sure outfile does not exist
+  if (isfilepresent(outfile)) then
+    system("rm -rf " + outfile) ;-- delete file if exists
+  end if
+
+  ;** Get the dimensions and dimension sizes of the variables to be written out
+  nra_star = dimsizes(ra)
+  ndec_star = dimsizes(dec)
+  nmag = dimsizes(mag)
+  ntypeClass = dimsizes(typeClass)
+  ndec_lat = dimsizes(dec_lat)
+  nra_lon = dimsizes(ra_lon)
+  nstarDensity = dimsizes(starDensity)
+
+  ;** Create new netCDF file
+  fout = addfile(outfile, "c")
+
+  ;** Begin Output File Settings
+  setfileoption(fout, "DefineMode", True) ;-- explicitly declare file
+
+  ;** Create Global Attributes of the File
+  fAtt = True ;-- assign file attributes
+  fAtt@title = "SAO Star Catalog"
+  fAtt@source_file = scat
+  fAtt@Conventions = "None"
+  fAtt@creation_date = systemfunc ("date")
+  fileattdef( fout, fAtt) ;-- copy file attributes
+
+  ;** Predefine the coordinate variables and their dimensionality
+  
+
+end 
+
+;-- Refer to applications/method_2.shtml (attainable by googling "ncl writing to existing netcdf file")
+;-- See ncl guide as well
+;-- You left off creating the new netcdf file

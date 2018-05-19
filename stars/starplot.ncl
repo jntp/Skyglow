@@ -83,7 +83,7 @@ begin
   ;* Assign coordinates and attributes
   starDensity!0 = "lat"
   starDensity!1 = "lon"
-  starDensity@long_name = "Star Density [# (M_v < 6.0) sr~S~-1~N~]"
+  starDensity@long_name = "Star Density [# (M~B~v~N~ < 6.0) sr~S~-1~N~]"
   starDensity@units = "N = 5104"  
   starDensity&lat = dec_lat
   starDensity&lon = ra_lon
