@@ -139,7 +139,7 @@ begin
 
   ;** Declare file names
   diri = "./"
-  outfile = "scat2D.ncl"
+  outfile = "scat2D.nc"
 
   ;** Make sure outfile does not exist
   if (isfilepresent(outfile)) then
@@ -147,13 +147,12 @@ begin
   end if
 
   ;** Get the dimensions and dimension sizes of the variables to be written out
-  nra_star = dimsizes(ra)
-  ndec_star = dimsizes(dec)
-  nmag = dimsizes(mag)
-  ntypeClass = dimsizes(typeClass)
+  nstar = dimsizes(ra)
   ndec_lat = dimsizes(dec_lat)
+  print(ndec_lat)
   nra_lon = dimsizes(ra_lon)
-  nstarDensity = dimsizes(starDensity)
+  print(nra_lon)
+
 
   ;** Create new netCDF file
   fout = addfile(outfile, "c")
@@ -164,16 +163,49 @@ begin
   ;** Create Global Attributes of the File
   fAtt = True ;-- assign file attributes
   fAtt@title = "SAO Star Catalog"
-  fAtt@source_file = scat
-  fAtt@Conventions = "None"
+  fAtt@source_file = "scat.nc"
+  fAtt@Conventions = "CF"
   fAtt@creation_date = systemfunc ("date")
-  fileattdef( fout, fAtt) ;-- copy file attributes
+  fileattdef(fout, fAtt) ;-- copy file attributes
 
   ;** Predefine the coordinate variables and their dimensionality
-  
+  dimNames = (/"star", "dec_lat", "ra_lon"/)
+  dimSizes = (/nstar, ndec_lat, nra_lon/)
+  dimUnlim = (/False, False, False/)
+  filedimdef(fout, dimNames, dimSizes, dimUnlim)
+
+  ;** Predefine the dimensionality of the variables to be written out
+  filevardef(fout, "ra", typeof(ra), getvardims(ra))
+  filevardef(fout, "dec", typeof(dec), getvardims(dec))
+  filevardef(fout, "mag", typeof(mag), getvardims(mag))
+  filevardef(fout, "typeClass", typeof(typeClass), getvardims(typeClass))
+  filevardef(fout, "dec_lat", typeof(dec_lat), getvardims(dec_lat))
+  filevardef(fout, "ra_lon", typeof(ra_lon), getvardims(ra_lon))
+  filevardef(fout, "starDensity", typeof(starDensity), getvardims(starDensity))
+
+  ;** Copy attributes asociated with each variable to the file
+  filevarattdef(fout, "ra", ra) ;-- copy ra attributes
+  filevarattdef(fout, "dec", dec)
+  filevarattdef(fout, "mag", mag)
+  filevarattdef(fout, "typeClass", typeClass)
+  filevarattdef(fout, "dec_lat", dec_lat)
+  filevarattdef(fout, "ra_lon", ra_lon)
+  filevarattdef(fout, "starDensity", starDensity)
+
+  ;** Explicity exit file definition mode
+  setfileoption(fout, "DefineMode", False)
+
+  ;** Output the data values to the predefined locations on the file
+  fout->ra = (/ra/)
+  fout->dec = (/dec/)
+  fout->mag = (/mag/)
+  fout->typeClass = (/typeClass/)
+  fout->dec_lat = (/dec_lat/)
+  fout->ra_lon = (/ra_lon/)
+  fout->starDensity = (/starDensity/)
 
 end 
 
 ;-- Refer to applications/method_2.shtml (attainable by googling "ncl writing to existing netcdf file")
 ;-- See ncl guide as well
-;-- You left off creating the new netcdf file
+;-- You left off creating the netcdf file...need to debug the script because there are a lot of problems!
