@@ -147,12 +147,10 @@ begin
   end if
 
   ;** Get the dimensions and dimension sizes of the variables to be written out
-  nstar = dimsizes(ra)
   ndec_lat = dimsizes(dec_lat)
   print(ndec_lat)
   nra_lon = dimsizes(ra_lon)
   print(nra_lon)
-
 
   ;** Create new netCDF file
   fout = addfile(outfile, "c")
@@ -169,26 +167,19 @@ begin
   fileattdef(fout, fAtt) ;-- copy file attributes
 
   ;** Predefine the coordinate variables and their dimensionality
-  dimNames = (/"star", "dec_lat", "ra_lon"/)
-  dimSizes = (/nstar, ndec_lat, nra_lon/)
-  dimUnlim = (/False, False, False/)
+  dimNames = (/"dec_lat", "ra_lon"/)
+  dimSizes = (/ndec_lat, nra_lon/)
+  dimUnlim = (/False, False/)
   filedimdef(fout, dimNames, dimSizes, dimUnlim)
 
   ;** Predefine the dimensionality of the variables to be written out
-  filevardef(fout, "ra", typeof(ra), getvardims(ra))
-  filevardef(fout, "dec", typeof(dec), getvardims(dec))
-  filevardef(fout, "mag", typeof(mag), getvardims(mag))
-  filevardef(fout, "typeClass", typeof(typeClass), getvardims(typeClass))
+  ;-- why the hell is there an error at line 177?!?!?!?
   filevardef(fout, "dec_lat", typeof(dec_lat), getvardims(dec_lat))
   filevardef(fout, "ra_lon", typeof(ra_lon), getvardims(ra_lon))
   filevardef(fout, "starDensity", typeof(starDensity), getvardims(starDensity))
 
   ;** Copy attributes asociated with each variable to the file
-  filevarattdef(fout, "ra", ra) ;-- copy ra attributes
-  filevarattdef(fout, "dec", dec)
-  filevarattdef(fout, "mag", mag)
-  filevarattdef(fout, "typeClass", typeClass)
-  filevarattdef(fout, "dec_lat", dec_lat)
+  filevarattdef(fout, "dec_lat", dec_lat) ;-- copy dec_lat attributes
   filevarattdef(fout, "ra_lon", ra_lon)
   filevarattdef(fout, "starDensity", starDensity)
 
@@ -196,10 +187,6 @@ begin
   setfileoption(fout, "DefineMode", False)
 
   ;** Output the data values to the predefined locations on the file
-  fout->ra = (/ra/)
-  fout->dec = (/dec/)
-  fout->mag = (/mag/)
-  fout->typeClass = (/typeClass/)
   fout->dec_lat = (/dec_lat/)
   fout->ra_lon = (/ra_lon/)
   fout->starDensity = (/starDensity/)
