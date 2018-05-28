@@ -65,6 +65,7 @@ begin
   end do
   dec_lat@long_name = "Declination in units latitude"
   dec_lat@units = "degrees_north"
+  dec_lat!0 = "dec_lat"
 
   ra_lon = new(71, float)
   do i = 0, 70
@@ -72,6 +73,7 @@ begin
   end do
   ra_lon@long_name = "Right ascension in units longitude"
   ra_lon@units = "degrees_east"
+  ra_lon!0 = "ra_lon"
 
   ;* Transpose the starDensity_1D array to a 2D matrix
   do i = 0, 34 ;-- loop through each latitude (declination) index
@@ -81,12 +83,12 @@ begin
   end do
 
   ;* Assign coordinates and attributes
-  starDensity!0 = "lat"
-  starDensity!1 = "lon"
+  starDensity!0 = "dec_lat"
+  starDensity!1 = "ra_lon"
   starDensity@long_name = "Star Density [# (M~B~v~N~ < 6.0) sr~S~-1~N~]"
   starDensity@units = "N = 5104"
-  starDensity&lat = dec_lat
-  starDensity&lon = ra_lon
+  starDensity&dec_lat = dec_lat
+  starDensity&ra_lon = ra_lon
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "scat_plot_cont")
@@ -116,11 +118,7 @@ begin
 
   ;** Title Resources
   res@tiMainString = "Stars in Night Sky: Present Day"
-  ; res@tiXAxisString = "Right Ascension [deg]"
-  ; res@tiYAxisString = "Declination [deg]"
   res@tiMainFontHeightF = 0.0225
-  ; res@tiXAxisFontHeightF = 0.020
-  ; res@tiYAxisFontHeightF = 0.020
 
   ;** Create the scatter plot
   plot = gsn_csm_contour_map(wks, starDensity, res) ;-- middle value must be 2D array
@@ -148,9 +146,7 @@ begin
 
   ;** Get the dimensions and dimension sizes of the variables to be written out
   ndec_lat = dimsizes(dec_lat)
-  print(ndec_lat)
   nra_lon = dimsizes(ra_lon)
-  print(nra_lon)
 
   ;** Create new netCDF file
   fout = addfile(outfile, "c")
@@ -173,7 +169,6 @@ begin
   filedimdef(fout, dimNames, dimSizes, dimUnlim)
 
   ;** Predefine the dimensionality of the variables to be written out
-  ;-- why the hell is there an error at line 177?!?!?!?
   filevardef(fout, "dec_lat", typeof(dec_lat), getvardims(dec_lat))
   filevardef(fout, "ra_lon", typeof(ra_lon), getvardims(ra_lon))
   filevardef(fout, "starDensity", typeof(starDensity), getvardims(starDensity))
@@ -195,4 +190,4 @@ end
 
 ;-- Refer to applications/method_2.shtml (attainable by googling "ncl writing to existing netcdf file")
 ;-- See ncl guide as well
-;-- You left off creating the netcdf file...need to debug the script because there are a lot of problems!
+;-- You left off seeing if you can make scat2D.nc a HDF5 file?
