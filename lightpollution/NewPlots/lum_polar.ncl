@@ -4,7 +4,7 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF files (two for calculating difference) 
-  cond = addfile("skg_swn_urb_cln.nc", "r") ;-- cond for "conditions" 
+  cond = addfile("skg_swn_urb_xpt.nc", "r") ;-- cond for "conditions" 
 
   ;** Read in data required for calculation 
   cond_lmn = cond->lmn_bb_aa ;-- broadband azimuthally averaged luminance
@@ -22,13 +22,13 @@ begin
   plr_dgr = plr_dgr(::-1)
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_lmn_urb_cln_pz")  
+  wks = gsn_open_wks("png", "skg_lmn_urb_xpt_pz")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
   res@sfXArray = plr_dgr ;-- show the x axis in degrees rather than radians
   res@sfYArray = levp ;-- use levp for y axis
-  res@tiMainString = "Urban Night Sky Brightness: Clean Sky"
+  res@tiMainString = "Urban Night Sky Brightness: Geoengineered"
   res@tiXAxisString = "Zenith Viewing Angle [deg]"
   res@tiYAxisString = "Pressure [mb]"
   res@gsnLeftString = "Luminance"
