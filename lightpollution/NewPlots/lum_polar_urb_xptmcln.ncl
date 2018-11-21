@@ -25,7 +25,7 @@ begin
 
   ;-- Read the colormap in an array and set new colormap
   cmap = read_colormap_file("BlueRed")
-  newColors = cmap(112:251, :) ;-- pick only part of the colormap
+  newColors = cmap(118:, :) ;-- pick only part of the colormap
 
   ;** Prepare plot
   wks = gsn_open_wks("png", "skg_lmn_urb_xptmcln_pz")  
@@ -54,7 +54,7 @@ begin
   res@cnFillPalette = newColors ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines 
   res@cnLevelSelectionMode = "ExplicitLevels"
-  res@cnLevels = (/-10, 0, 10, 20, 30, 40, 60, 80, 100, 120, 140, 160/)
+  res@cnLevels = (/0, 10, 20, 30, 40, 50, 75, 100, 250, 500, 750, 1000/)
   
 
   ;** Make the plot

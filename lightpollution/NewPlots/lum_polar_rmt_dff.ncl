@@ -28,7 +28,7 @@ begin
   newColors = cmap(0:133, :) ;-- pick only part of the colormap
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_lmn_rmt_xptmctlz_pz")  
+  wks = gsn_open_wks("png", "skg_lmn_rmt_xptmctl_pz")  
 
   res = True
   res@gsnMaximize = True ;-- maximize plot
@@ -54,7 +54,7 @@ begin
   res@cnFillPalette = newColors ;-- set color map
   res@cnLinesOn = True ;-- keep contour lines 
   res@cnLevelSelectionMode = "ExplicitLevels"
-  res@cnLevels = (/-10, -8, -6, -5, -4, -3, -2, -1, 0/)
+  res@cnLevels = (/-10, -8, -7, -6, -5, -4, -3, -2, -1, 0/)
   
   ;** Make the plot
   plot = gsn_csm_contour(wks, percentage, res) ;-- draw a contour plot 
