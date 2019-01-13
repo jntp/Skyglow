@@ -4,9 +4,9 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  ctl = addfile("skg_swn_urb_ctl.nc", "r") ;-- from control file (present day)
-  xpt = addfile("skg_swn_urb_xpt.nc", "r") ;-- from experiment file (geoengineered)
-  cln = addfile("skg_swn_urb_cln.nc", "r") ;-- form clean file
+  ctl = addfile("skg_swn_rmt_ctl.nc", "r") ;-- from control file (present day)
+  xpt = addfile("skg_swn_rmt_xpt.nc", "r") ;-- from experiment file (geoengineered)
+  cln = addfile("skg_swn_rmt_cln.nc", "r") ;-- form clean file
 
   ;** Read in data required for calculation
   ctl_ndr = ctl->lmn_bb_aa_ndr(31:) ;-- broadband azimuthally averaged luminance toward nadir (x axis)
@@ -31,12 +31,12 @@ begin
   levp@units = "hectopascal" 
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_lmn_znt_urb_vz")
+  wks = gsn_open_wks("png", "skg_lmn_znt_rmt_vz")
 
   res = True
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
-  res@tiMainString = "Urban Night Sky Brightness"
+  res@tiMainString = "Remote Night Sky Brightness"
   res@tiXAxisString = "Zenith-viewing Luminance [mcd m~S~-2~N~]"
   res@tiYAxisString = "Pressure [mb]"
   res@tiMainFontHeightF = 0.025
@@ -49,8 +49,8 @@ begin
 
   ;-- NOTE... FOR URBAN AREAS, CHOOSE BETWEEN 0 and 2.8
   ;-- FOR REMOTE, CHOOSE BETWEEN 0.160 and 0.174
-  res@trXMinF = 0 ;-- x axis minimum value
-  res@trXMaxF = 2.8 ;-- x axis maximum value
+  res@trXMinF = 0.160 ;-- x axis minimum value
+  res@trXMaxF = 0.174 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"black", "green", "blue"/) 
@@ -65,8 +65,8 @@ begin
 
   ;-- NOTE... FOR URBAN AREAS, CHOOSE 0.73 for ParallelPos and -0.38 for OrthogonalPos
   ;-- FOR REMOTE, CHOOSE 0.24 for ParallelPos and -0.34 for OrthogonalPos
-  res@pmLegendParallelPosF = 0.73 ;-- move units right
-  res@pmLegendOrthogonalPosF = -0.38 ;-- move units down
+  res@pmLegendParallelPosF = 0.24 ;-- move units right
+  res@pmLegendOrthogonalPosF = -0.34 ;-- move units down
 
   res@lgPerimOn = False ;-- turn off legend perimeter
   res@pmLegendWidthF = 0.11

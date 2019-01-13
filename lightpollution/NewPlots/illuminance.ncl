@@ -4,9 +4,9 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  ctl = addfile("skg_swn_urb_ctl.nc", "r") ;-- from control file (present day)
-  xpt = addfile("skg_swn_urb_xpt.nc", "r") ;-- from experiment file (geoengineered)
-  cln = addfile("skg_swn_urb_cln.nc", "r") ;-- from clean file
+  ctl = addfile("skg_swn_rmt_ctl.nc", "r") ;-- from control file (present day)
+  xpt = addfile("skg_swn_rmt_xpt.nc", "r") ;-- from experiment file (geoengineered)
+  cln = addfile("skg_swn_rmt_cln.nc", "r") ;-- from clean file
 
   ;** Read in data required for calculation
   ctl_ilm = ctl->ilm_dwn(31:) ;-- total downwelling illuminance (direct + diffuse)
@@ -30,12 +30,12 @@ begin
   levp@units = "hectopascal" 
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_ilm_urb_vz")
+  wks = gsn_open_wks("png", "skg_ilm_rmt_vz")
 
   res = True
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
-  res@tiMainString = "Urban Night Sky Illuminance"
+  res@tiMainString = "Remote Night Sky Illuminance"
   res@tiXAxisString = "Downwelling Illuminance [mlux]"
   res@tiYAxisString = "Pressure [mb]"
   res@tiMainFontHeightF = 0.025
@@ -48,8 +48,8 @@ begin
 
   ;-- NOTE... FOR URBAN AREAS, CHOOSE BETWEEN 0 and 16
   ;-- FOR REMOTE, CHOOSE BETWEEN 0.470 and 0.542
-  res@trXMinF = 0 ;-- x axis minimum value
-  res@trXMaxF = 16 ;-- x axis maximum value
+  res@trXMinF = 0.470 ;-- x axis minimum value
+  res@trXMaxF = 0.542 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"black", "green", "blue"/) 
@@ -64,8 +64,8 @@ begin
 
   ;-- NOTE... FOR URBAN AREAS, CHOOSE 0.73 for ParallelPos and -0.38 for OrthogonalPos
   ;-- FOR REMOTE, CHOOSE 0.24 for ParallelPos and -0.34 for OrthogonalPos
-  res@pmLegendParallelPosF = 0.73 ;-- move units right
-  res@pmLegendOrthogonalPosF = -0.38 ;-- move units down
+  res@pmLegendParallelPosF = 0.24 ;-- move units right
+  res@pmLegendOrthogonalPosF = -0.34 ;-- move units down
 
   res@lgPerimOn = False ;-- turn off legend perimeter
   res@pmLegendWidthF = 0.11
