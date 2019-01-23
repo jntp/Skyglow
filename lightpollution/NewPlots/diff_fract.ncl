@@ -4,9 +4,9 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 begin
 
   ;** Read in netCDF file 
-  ctl = addfile("skg_swn_urb_ctl.nc", "r") ;-- from control file (present day)
-  xpt = addfile("skg_swn_urb_xpt.nc", "r") ;-- from experiment file (geoengineered)
-  cln = addfile("skg_swn_urb_cln.nc", "r") ;-- form clean file
+  ctl = addfile("skg_swn_str_ctl.nc", "r") ;-- from control file (present day)
+  xpt = addfile("skg_swn_str_xpt.nc", "r") ;-- from experiment file (geoengineered)
+  cln = addfile("skg_swn_str_cln.nc", "r") ;-- form clean file
 
   ;** Read in data required for calculation
   ctl_dff = ctl->flx_frc_dwn_dff(31:) ;-- broadband azimuthally averaged luminance toward nadir (x axis)
@@ -24,19 +24,16 @@ begin
   x!1 = "diffuse fraction"
 
   ;** Convert units for better readability
-  ; x = x * 1000 ;-- convert to millicandelas per meter squared
-  ; x@units = "millicandela meter-2"
-
   levp = levp / 100 ;-- convert to hPa or millibars
   levp@units = "hectopascal" 
 
   ;** Prepare plot
-  wks = gsn_open_wks("png", "skg_swnb_urb_str")
+  wks = gsn_open_wks("png", "skg_swnb_str")
 
   res = True
   res@gsnDraw = False ;-- don't draw plot yet
   res@gsnFrame = False ;-- don't advance frame
-  res@tiMainString = "Diffuse Urban Starlight Fraction"
+  res@tiMainString = "Diffuse Starlight Fraction"
   res@tiXAxisString = "Diffuse Fraction of Downwelling Irradiance"
   res@tiYAxisString = "Pressure [mb]"
   res@tiMainFontHeightF = 0.025
@@ -47,10 +44,9 @@ begin
   res@trYMinF = 0 ;-- y axis minimum value
   res@trYMaxF = 1000 ;-- y axis maximum value
 
-  ;-- NOTE... FOR URBAN AREAS, CHOOSE BETWEEN 0 and 2.8
-  ;-- FOR REMOTE, CHOOSE BETWEEN 0.160 and 0.174
-  res@trXMinF = 0.9 ;-- x axis minimum value
-  res@trXMaxF = 1.1 ;-- x axis maximum value
+  ;** Choose min and max value of x axis
+  ; res@trXMinF = 0.9 ;-- x axis minimum value
+  ; res@trXMaxF = 1.1 ;-- x axis maximum value
   
   res@xyDashPattern = 0 ;-- makes all lines solid
   res@xyLineColors = (/"black", "green", "blue"/) 
@@ -63,10 +59,9 @@ begin
   res@pmLegendDisplayMode = "Always" ;-- turn on legend
   res@pmLegendSide = "Top" ;-- position of legend (what side)
 
-  ;-- NOTE... FOR URBAN AREAS, CHOOSE 0.73 for ParallelPos and -0.38 for OrthogonalPos
-  ;-- FOR REMOTE, CHOOSE 0.24 for ParallelPos and -0.34 for OrthogonalPos
-  res@pmLegendParallelPosF = 0.24 ;-- move units right
-  res@pmLegendOrthogonalPosF = -0.34 ;-- move units down
+  ;** Set position of legend
+  res@pmLegendParallelPosF = 0.73 ;-- move units right
+  res@pmLegendOrthogonalPosF = -0.38 ;-- move units down
 
   res@lgPerimOn = False ;-- turn off legend perimeter
   res@pmLegendWidthF = 0.11
